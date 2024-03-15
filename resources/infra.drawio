@@ -1,0 +1,133 @@
+<mxfile host="Electron" modified="2024-03-15T12:06:47.446Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.0.4 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="mNGQNbTRdR5eKT_wH9gZ" version="24.0.4" type="device">
+  <diagram name="Page-1" id="_AQdV9kWcpvZBW8GO-Wz">
+    <mxGraphModel dx="2390" dy="1405" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-1" value="k8s" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="1190" height="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-6" target="_7gbTuj7HbiEhWHhoc8v-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-91" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=default;endArrow=none;endFill=0;dashed=1;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-6" target="_7gbTuj7HbiEhWHhoc8v-90">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1410" y="810" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-6" value="Vue app" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="400" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-16" target="_7gbTuj7HbiEhWHhoc8v-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-16" value="Service" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="930" y="400" width="123" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-17" target="_7gbTuj7HbiEhWHhoc8v-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-17" value="Ingress" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="400" width="123" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-18" target="_7gbTuj7HbiEhWHhoc8v-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-18" value="User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="415" width="70" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-33" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="90" y="280" width="250" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-75" value="Deployment" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-33">
+          <mxGeometry x="-20" y="-60" width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-27" value="Pod" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-33">
+          <mxGeometry width="230" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-28" value="PostgreSQL" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-33">
+          <mxGeometry x="20" y="50" width="190" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-70" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="470" y="700" width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-63" value="Deployment" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-70">
+          <mxGeometry width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-64" value="" style="group" vertex="1" connectable="0" parent="_7gbTuj7HbiEhWHhoc8v-70">
+          <mxGeometry x="20" y="60" width="230" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-65" value="Pod" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-64">
+          <mxGeometry width="230" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-66" value="Celery task runner" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-64">
+          <mxGeometry x="20" y="50" width="190" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-79" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="530" y="220" width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-14" value="Deployment" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-79">
+          <mxGeometry width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-9" value="" style="group" vertex="1" connectable="0" parent="_7gbTuj7HbiEhWHhoc8v-79">
+          <mxGeometry x="20" y="60" width="230" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-8" value="Pod" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-9">
+          <mxGeometry width="230" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-2" value="Python web app&lt;div&gt;container&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-9">
+          <mxGeometry x="20" y="50" width="190" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-80" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-66" target="_7gbTuj7HbiEhWHhoc8v-28">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="450" y="848" />
+              <mxPoint x="450" y="590" />
+              <mxPoint x="253" y="590" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-42" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-2" target="_7gbTuj7HbiEhWHhoc8v-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-82" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="70" y="690" width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-83" value="Deployment" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-82">
+          <mxGeometry width="270" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-84" value="" style="group" vertex="1" connectable="0" parent="_7gbTuj7HbiEhWHhoc8v-82">
+          <mxGeometry x="20" y="60" width="230" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-85" value="Pod" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;verticalAlign=top;align=left;fontSize=22;spacingLeft=6;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-84">
+          <mxGeometry width="230" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-86" value="Celery Flower" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;" vertex="1" parent="_7gbTuj7HbiEhWHhoc8v-84">
+          <mxGeometry x="20" y="50" width="190" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-89" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-86" target="_7gbTuj7HbiEhWHhoc8v-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-92" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;endArrow=none;endFill=0;dashed=1;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-90" target="_7gbTuj7HbiEhWHhoc8v-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1333" y="640" />
+              <mxPoint x="713" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-93" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;dashed=1;endArrow=none;endFill=0;" edge="1" parent="1" source="_7gbTuj7HbiEhWHhoc8v-90" target="_7gbTuj7HbiEhWHhoc8v-66">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-90" value="&lt;font style=&quot;font-size: 22px;&quot;&gt;GitHub repo&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1255" y="785" width="310" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="_7gbTuj7HbiEhWHhoc8v-94" value="Notes:&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- How exactly code from the github repo is built into images and gets used in k8s is tbd. We will likely need a gitlab repo for the manifests and this could pull from the github code perhaps (subrepo).&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- Deploy the Vue app through the flask/fastapi server? Or setup nginx to serve it up better?&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;- Should we use a separate cronjob which runs a specific image &amp;amp; command to reload BOLD info and such, or should we just trigger it in celery? Either as a scheduled task in the main app or by running a cronjob to trigger schedule&amp;nbsp;&lt;span style=&quot;background-color: initial;&quot;&gt;a&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;celery job.&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;br&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;- Decided to just use a single PostgreSQL database for everything, rather than add a Redis instance for Celery and Elasticsearch for searching. We can add these things if we need them later cause scaling is becoming a problem.&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=22;verticalAlign=top;align=left;spacingLeft=5;" vertex="1" parent="1">
+          <mxGeometry x="1700" y="40" width="590" height="560" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
