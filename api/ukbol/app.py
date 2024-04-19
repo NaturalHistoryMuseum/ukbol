@@ -9,7 +9,6 @@ def create_app() -> Flask:
 
     # setup the config from env vars
     app.config.from_prefixed_env()
-    app.config.from_prefixed_env("SQLALCHEMY")
     app.config.from_prefixed_env("UKBOL")
 
     # setup extensions

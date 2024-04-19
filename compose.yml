@@ -16,7 +16,7 @@ services:
       RUN_MIGRATE: "FALSE"
       FLASK_APP: "ukbol/app:create_app"
       FLASK_DEBUG: "true"
-      SQLALCHEMY_DATABASE_URI: postgresql+psycopg://admin:password@db/ukbol
+      UKBOL_SQLALCHEMY_DATABASE_URI: postgresql+psycopg://admin:password@db/ukbol
     volumes:
       - ./api:/app/api
 
