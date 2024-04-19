@@ -5,3 +5,7 @@ version = "0.0.1"
 changelog_incremental = true
 update_changelog_on_bump = true
 tag_format = "v$version"
+version_files = [
+    "api/pyproject.toml:version",
+    "web/package.json:version"
+]
