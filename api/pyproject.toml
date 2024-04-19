@@ -1,0 +1,65 @@
+[project]
+name = "ukbol"
+version = "0.0.1"
+description = "UK Barcode of Life website and data portal"
+requires-python = ">=3.12"
+license = { text = "GPL-3.0-or-later" }
+authors = [
+    { name = "Josh Humphries" },
+    { name = "Ginger Butcher" }
+]
+keywords = []
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only"
+]
+
+dependencies = [
+    "flask==3.0.3",
+    "click==8.1.7",
+    "psycopg[binary,pool]==3.1.18",
+    "SQLAlchemy==2.0.29",
+    "Flask-SQLAlchemy==3.1.1",
+    "Flask-Migrate==4.0.7",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "coveralls"
+]
+
+[project.urls]
+repository = "https://github.com/NaturalHistoryMuseum/ukbol"
+changelog = "https://github.com/NaturalHistoryMuseum/ukbol/blob/main/CHANGELOG.md"
+
+[project.scripts]
+ukbol = "ukbol.cli:cli"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool]
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+exclude = ["tests", "docs"]
+
+[tool.black]
+line-length = 88
+skip_string_normalization = true
+
+[tool.pylint]
+max-line-length = 88
+disable = ["C0114", "R0903"]
+
+[tool.docformatter]
+wrap-summaries = 88
+wrap-descriptions = 88
+pre-summary-newline = true
+make-summary-multi-line = true
