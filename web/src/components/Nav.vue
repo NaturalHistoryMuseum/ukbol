@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="relative w-screen top-0 left-0"
+    class="relative w-screen top-0 left-0 bg-white"
     role="navigation"
     aria-label="main navigation"
   >
@@ -8,7 +8,7 @@
       <a class="" href="/">
         <img
           class=""
-          src="/images/logos/logo-ukbol.png"
+          src="/images/logos/logo.png"
           alt="UK Barcode of Life | Home"
         />
       </a>
