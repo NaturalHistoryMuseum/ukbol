@@ -23,6 +23,7 @@ dependencies = [
     "SQLAlchemy==2.0.29",
     "Flask-SQLAlchemy==3.1.1",
     "Flask-Migrate==4.0.7",
+    "networkx==3.3",
 ]
 
 [project.optional-dependencies]
