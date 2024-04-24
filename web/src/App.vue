@@ -1,9 +1,9 @@
 <template>
-  <HelloWorld />
+  <Nav />
 </template>
 
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue';
+import Nav from './components/Nav.vue';
 </script>
 
 <style scoped></style>
