@@ -5,26 +5,30 @@
     aria-label="main navigation"
   >
     <div class="flex space-x-10 items-center">
-      <a class="" href="/">
+      <RouterLink class="" to="/">
         <img
           class=""
           src="/images/logos/logo.png"
           alt="UK Barcode of Life | Home"
         />
-      </a>
-      <a v-for="[link, name] in links" :href="link" class="text-lg">
-        {{ name }}
-      </a>
+      </RouterLink>
+      <RouterLink
+        v-for="[routeName, linkText] in links"
+        :to="{ name: routeName }"
+        class="text-lg"
+      >
+        {{ linkText }}
+      </RouterLink>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
 const links = [
-  ['/about', 'About'],
-  ['/dna-barcoding', 'DNA Barcoding'],
-  ['/priority-species', 'Priority Species'],
-  ['/related-projects', 'Related Projects'],
+  ['about', 'About'],
+  ['dna-barcoding', 'DNA Barcoding'],
+  ['priority-species', 'Priority Species'],
+  ['related-projects', 'Related Projects'],
 ];
 </script>
 
