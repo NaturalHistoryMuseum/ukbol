@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="relative w-screen top-0 left-0 bg-white"
+    class="relative w-screen top-0 left-0 bg-white px-4"
     role="navigation"
     aria-label="main navigation"
   >
@@ -16,7 +16,7 @@
         v-for="[routeName, linkText] in links"
         :to="{ name: routeName }"
         class="text-lg"
-        :class="{'font-bold': $route.name == routeName}"
+        :class="{ 'font-bold': $route.name == routeName }"
       >
         {{ linkText }}
       </RouterLink>
