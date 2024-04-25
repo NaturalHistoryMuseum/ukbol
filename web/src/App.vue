@@ -1,6 +1,6 @@
 <template>
   <Nav />
-  <main>
+  <main class="flex w-screen justify-center pt-5">
     <RouterView />
   </main>
 </template>
