@@ -16,6 +16,7 @@
         v-for="[routeName, linkText] in links"
         :to="{ name: routeName }"
         class="text-lg"
+        :class="{'font-bold': $route.name == routeName}"
       >
         {{ linkText }}
       </RouterLink>
