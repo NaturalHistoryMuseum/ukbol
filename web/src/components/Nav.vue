@@ -28,6 +28,7 @@
 const links = [
   ['about', 'About'],
   ['dna-barcoding', 'DNA Barcoding'],
+  ['data', 'Explore Data'],
   ['priority-species', 'Priority Species'],
   ['related-projects', 'Related Projects'],
 ];
