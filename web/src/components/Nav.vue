@@ -7,7 +7,7 @@
     <div class="flex space-x-10 items-center">
       <RouterLink class="" to="/">
         <img
-          class=""
+          class="p-2"
           src="/images/logos/logo.png"
           alt="UK Barcode of Life | Home"
         />
