@@ -42,11 +42,12 @@ def extract_taxonomy(row: dict[str, str]) -> dict[str, str | None]:
     data = {}
     for rank in order:
         name = get(row, rank, lowercase=True)
-        data[rank] = name
         if name:
+            data[rank] = name
             data["name"] = name
             data["rank"] = rank
-    data["cls"] = data.pop("class")
+    if "class" in data:
+        data["cls"] = data.pop("class")
     return data
 
 
