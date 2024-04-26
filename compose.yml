@@ -1,25 +1,6 @@
-version: '3'
+version: "3"
 
 services:
-  api:
-    depends_on:
-      - db
-    build:
-      context: .
-      dockerfile: docker/api/Dockerfile
-    networks:
-      ukbol_net:
-        ipv4_address: 10.0.15.20
-    environment:
-      PYTHONUNBUFFERED: 1
-      PYTHONDONTWRITEBYTECODE: 1
-      RUN_MIGRATE: "FALSE"
-      FLASK_APP: "ukbol/app:create_app"
-      FLASK_DEBUG: "true"
-      UKBOL_SQLALCHEMY_DATABASE_URI: postgresql+psycopg://admin:password@db/ukbol
-    volumes:
-      - ./api:/app/api
-
   db:
     image: postgres:16
     environment:
@@ -27,7 +8,10 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: ukbol
     networks:
-      - ukbol_net
+      ukbol_net:
+        ipv4_address: 10.0.15.20
+    ports:
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data/
 

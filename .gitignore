@@ -1,2 +1,5 @@
 .idea/
-docker-compose.override.yml
+.python-version
+*.egg-info
+.venv
+__pycache__
