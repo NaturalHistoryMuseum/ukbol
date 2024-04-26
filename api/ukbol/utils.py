@@ -8,6 +8,8 @@ def log(message: str):
 
 
 def create_all_tables():
-    from ukbol.model import Taxon, Specimen, Synonym
-
     db.create_all()
+
+
+def drop_all_tables():
+    db.drop_all()

@@ -15,6 +15,9 @@ def create_app() -> Flask:
     db.init_app(app)
     migrate.init_app(app, db)
 
+    # import models so that they get noticed by sqlalchemy and alembic
+    from ukbol.model import Taxon, Specimen, Synonym
+
     # setup routes
     bind_routes(app)
 
