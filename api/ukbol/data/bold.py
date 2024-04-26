@@ -12,6 +12,18 @@ from ukbol.utils import log
 
 
 def get_tsv_name(tar: tarfile.TarFile) -> str:
+    """
+    Given a path to a tar.gz archive, return the name of the first TSV file inside it
+    that we encounter. The BOLD tar.gz snapshots only have a single .json and a single.
+
+    .tsv file within them currently so this should be able to find the TSV file we need
+    to read without knowing what it is called.
+
+    If no TSV file can be found, an Exception is raised.
+
+    :param tar: the Path to the tar.gz BOLD snapshot
+    :return: the name of the TSV file
+    """
     for name in tar.getnames():
         if name.endswith(".tsv"):
             return name
@@ -19,12 +31,22 @@ def get_tsv_name(tar: tarfile.TarFile) -> str:
 
 
 def get(row: dict[str, str], column: str, lowercase: bool = False) -> str | None:
+    """
+    Given a row from the BOLD TSV snapshot, return the value of the given column or None
+    if the column isn't present or the column's value is the string "None".
+
+    :param row: the row as a dict
+    :param column: the column to get the value of
+    :param lowercase: whether to lowercase value or not, defaults to False
+    :return: the value or None
+    """
     value = row.get(column, None)
     if value and value != "None":
         return value.lower() if lowercase else value
     return None
 
 
+# taxonomic rank order
 order = (
     "kingdom",
     "phylum",
@@ -39,19 +61,39 @@ order = (
 
 
 def extract_taxonomy(row: dict[str, str]) -> dict[str, str | None]:
+    """
+    Given a row of data from a BOLD snapshot, return a dict which can be used to
+    populate a Specimen object. Any taxonomic ranks found will be present in the
+    returned dict (with the values lowercased) along with the "name" and "rank" keys
+    indicating the most precise rank present in the row.
+
+    :param row: the row as a dict
+    :return: the found taxonomy columns as a dict
+    """
     data = {}
     for rank in order:
         name = get(row, rank, lowercase=True)
         if name:
+            # add the rank and name to the data and update the lowest name and rank
+            # we've found so far
             data[rank] = name
             data["name"] = name
             data["rank"] = rank
+    # in the data model, the "class" column is called "cls" because class is a Python
+    # keyword and therefore not usable
     if "class" in data:
         data["cls"] = data.pop("class")
     return data
 
 
 def iter_specimens(rows: Iterable[dict[str, str]]) -> Iterable[Specimen]:
+    """
+    Given an iterable of rows from the BOLD snapshot as dicts, return an iterable of
+    Specimen objects created from them.
+
+    :param rows: the rows as dicts
+    :return: an iterable of Specimen objects
+    """
     yield from (
         Specimen(
             specimen_id=get(row, "specimenid"),
@@ -64,6 +106,12 @@ def iter_specimens(rows: Iterable[dict[str, str]]) -> Iterable[Specimen]:
 
 
 def rebuild_bold_tables(bold_snapshot: Path):
+    """
+    Given the path to a BOLD snapshot, read the TSV in that snapshot and replace the
+    current data in the Specimen table with the data. All old data is deleted.
+
+    :param bold_snapshot: Path to the BOLD snapshot
+    """
     Specimen.query.delete()
     db.session.commit()
 
