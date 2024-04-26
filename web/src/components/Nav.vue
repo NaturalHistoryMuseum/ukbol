@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="relative w-screen top-0 left-0 bg-white px-4"
+    class="relative h-full w-full bg-white px-4"
     role="navigation"
     aria-label="main navigation"
   >
@@ -34,4 +34,8 @@ const links = [
 ];
 </script>
 
-<style scoped></style>
+<style scoped>
+nav {
+  height: var(--nav-height);
+}
+</style>

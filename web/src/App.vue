@@ -1,12 +1,20 @@
 <template>
-  <Nav />
-  <main class="flex w-screen justify-center pt-5">
-    <RouterView />
-  </main>
+  <div class="w-full">
+    <Nav />
+    <main class="flex w-full justify-center">
+      <RouterView />
+    </main>
+    <Footer />
+  </div>
 </template>
 
 <script setup lang="ts">
 import Nav from './components/Nav.vue';
+import Footer from './components/Footer.vue';
 </script>
 
-<style scoped></style>
+<style scoped>
+main {
+  min-height: calc(100vh - var(--nav-height) - var(--foot-height));
+}
+</style>
