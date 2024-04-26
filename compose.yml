@@ -2,10 +2,13 @@ version: "3"
 
 services:
   db:
-    image: postgres:16
+    build:
+      context: ./docker/db
+      dockerfile: Dockerfile
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
+      # create a database for the app (a test one is created in an init script)
       POSTGRES_DB: ukbol
     networks:
       ukbol_net:
