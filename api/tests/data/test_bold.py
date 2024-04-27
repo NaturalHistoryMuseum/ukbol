@@ -5,7 +5,6 @@ import pytest
 
 from ukbol.data.bold import (
     get_tsv_name,
-    get,
     extract_taxonomy,
     iter_specimens,
     rebuild_bold_tables,
@@ -25,22 +24,6 @@ class TestGetTSVName:
         with tarfile.open(bad_bold_tar_gz) as tar:
             with pytest.raises(Exception):
                 get_tsv_name(tar)
-
-
-class TestGet:
-    def test_value_exists(self):
-        assert get({"test": "value"}, "test", lowercase=False) == "value"
-
-    def test_value_exists_lowercase(self):
-        assert get({"test": "VaLuE"}, "test", lowercase=True) == "value"
-
-    def test_value_missing(self):
-        assert get({}, "test", lowercase=True) is None
-        assert get({}, "test", lowercase=False) is None
-        assert get({"test": "None"}, "test") is None
-
-    def test_value_lowercase_default(self):
-        assert get({"test": "VaLuE"}, "test") == "VaLuE"
 
 
 class TestExtractTaxonomy:

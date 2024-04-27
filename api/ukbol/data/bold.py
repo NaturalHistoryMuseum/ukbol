@@ -6,6 +6,7 @@ from itertools import batched
 from pathlib import Path
 from typing import Iterable
 
+from ukbol.data.utils import get
 from ukbol.extensions import db
 from ukbol.model import Specimen
 from ukbol.utils import log
@@ -28,22 +29,6 @@ def get_tsv_name(tar: tarfile.TarFile) -> str:
         if name.endswith(".tsv"):
             return name
     raise Exception("Could not find .tsv file in BOLD data package")
-
-
-def get(row: dict[str, str], column: str, lowercase: bool = False) -> str | None:
-    """
-    Given a row from the BOLD TSV snapshot, return the value of the given column or None
-    if the column isn't present or the column's value is the string "None".
-
-    :param row: the row as a dict
-    :param column: the column to get the value of
-    :param lowercase: whether to lowercase value or not, defaults to False
-    :return: the value or None
-    """
-    value = row.get(column, None)
-    if value and value != "None":
-        return value.lower() if lowercase else value
-    return None
 
 
 # taxonomic rank order
@@ -72,7 +57,7 @@ def extract_taxonomy(row: dict[str, str]) -> dict[str, str | None]:
     """
     data = {}
     for rank in order:
-        name = get(row, rank, lowercase=True)
+        name = get(row, rank, lowercase=True, filter_str_nones=True)
         if name:
             # add the rank and name to the data and update the lowest name and rank
             # we've found so far
@@ -96,9 +81,9 @@ def iter_specimens(rows: Iterable[dict[str, str]]) -> Iterable[Specimen]:
     """
     yield from (
         Specimen(
-            specimen_id=get(row, "specimenid"),
-            bin_uri=get(row, "bin_uri"),
-            country=get(row, "country", lowercase=True),
+            specimen_id=get(row, "specimenid", filter_str_nones=True),
+            bin_uri=get(row, "bin_uri", filter_str_nones=True),
+            country=get(row, "country", lowercase=True, filter_str_nones=True),
             **extract_taxonomy(row),
         )
         for row in rows
