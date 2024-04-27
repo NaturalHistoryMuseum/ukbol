@@ -112,6 +112,7 @@ def rebuild_bold_tables(bold_snapshot: Path):
 
     :param bold_snapshot: Path to the BOLD snapshot
     """
+    log("Removing existing data...")
     Specimen.query.delete()
     db.session.commit()
 
