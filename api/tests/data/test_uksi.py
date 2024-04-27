@@ -16,16 +16,19 @@ class TestRebuildUKSITables:
         biota = Taxon.query.get("NHMSYS0021048735")
         assert biota.name == "biota"
         assert biota.rank == "unranked"
+        assert biota.authorship is None
         assert biota.parent_id is None
         assert len(biota.children) == 1
 
         eukaryota = biota.children[0]
         assert eukaryota.id == "NBNSYS0100003095"
         assert eukaryota.name == "eukaryota"
+        assert eukaryota.authorship == "(Chatton, 1925) Whittaker & Margulis, 1978"
         assert eukaryota.rank == "domain"
 
         fungi = Taxon.query.get("NHMSYS0020535450")
         assert fungi.name == "fungi"
+        assert fungi.authorship == "R.T. Moore"
         assert fungi.rank == "kingdom"
         assert len(fungi.children) == 2
         ascomycota, zygomycota = sorted(fungi.children, key=lambda t: t.name)
@@ -38,6 +41,8 @@ class TestRebuildUKSITables:
             Synonym.query.get("BMSSYS0000042050"),
             Synonym.query.get("NHMSYS0000361124"),
         ]
+        assert Synonym.query.get("BMSSYS0000042050").authorship == "I. Kotte"
+        assert Synonym.query.get("NHMSYS0000361124").authorship is None
         assert Synonym.query.get("BMSSYS0000000016").rank == "variety"
 
     def test_with_old_data(self, app):

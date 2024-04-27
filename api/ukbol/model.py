@@ -11,6 +11,7 @@ from ukbol.extensions import db
 class Taxon(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column()
+    authorship: Mapped[str | None] = mapped_column()
     rank: Mapped[str] = mapped_column(index=True)
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("taxon.id"), index=True)
 
@@ -24,6 +25,7 @@ class Taxon(db.Model):
 class Synonym(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column()
+    authorship: Mapped[str | None] = mapped_column()
     rank: Mapped[str] = mapped_column()
     taxon_id: Mapped[str] = mapped_column(ForeignKey(Taxon.id), index=True)
 

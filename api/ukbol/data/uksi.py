@@ -7,6 +7,7 @@ from typing import Iterable
 
 import networkx as nx
 
+from ukbol.data.utils import get
 from ukbol.extensions import db
 from ukbol.model import Taxon, Synonym
 from ukbol.utils import log
@@ -42,12 +43,14 @@ def rebuild_uksi_tables(uksi_dwca: Path):
                 # lowercase both the name and the rank to make matching easier
                 name = row["scientificName"].lower()
                 rank = row["taxonRank"].lower()
+                authorship = get(row, "scientificNameAuthorship")
 
                 if row["taxonomicStatus"] == "synonym":
                     synonyms.append(
                         Synonym(
                             id=taxon_id,
                             name=name,
+                            authorship=authorship,
                             rank=rank,
                             taxon_id=row["acceptedNameUsageID"],
                         )
@@ -59,6 +62,7 @@ def rebuild_uksi_tables(uksi_dwca: Path):
                     taxon = Taxon(
                         id=taxon_id,
                         name=name,
+                        authorship=authorship,
                         rank=rank,
                         parent_id=parent_id,
                     )
