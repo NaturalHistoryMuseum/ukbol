@@ -38,3 +38,18 @@ def test_rebuild_uksi_tables(app):
         Synonym.query.get("NHMSYS0000361124"),
     ]
     assert Synonym.query.get("BMSSYS0000000016").rank == "variety"
+
+
+def test_rebuild_old_data(app):
+    # add a load of data
+    rebuild_uksi_tables(uksi_dwca)
+    first_taxon_count = Taxon.query.count()
+    first_synonym_count = Synonym.query.count()
+
+    # then add the data again, this should delete what was added a moment ago and
+    # then add it again
+    rebuild_uksi_tables(uksi_dwca)
+    second_taxon_count = Taxon.query.count()
+    second_synonym_count = Synonym.query.count()
+    assert first_taxon_count == second_taxon_count
+    assert first_synonym_count == second_synonym_count
