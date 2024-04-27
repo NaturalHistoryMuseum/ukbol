@@ -1,6 +1,5 @@
 import csv
 import zipfile
-from collections import defaultdict
 from io import TextIOWrapper
 from itertools import batched
 from pathlib import Path
@@ -14,13 +13,24 @@ from ukbol.utils import log
 
 
 def rebuild_uksi_tables(uksi_dwca: Path):
+    """
+    Given the Path to a UKSI taxonomy DwC-A file, clear out the taxon and synonym
+    tables, and then repopulate them with data derived from the DwC-A.
+
+    :param uksi_dwca: the Path to a DwC-A file of the UKSI taxonomy
+    """
+    log("Removing existing data...")
     Synonym.query.delete()
     Taxon.query.delete()
     db.session.commit()
 
-    graph = nx.Graph()
-    synonyms = defaultdict(list)
-    roots = []
+    # we're going to build a directed graph from the taxonomy data so that we can add
+    # the rows into the database in the right order, thus ensuring all the foreign keys
+    # get inserted ok and in the right order (i.e. the referenced row is entered before
+    # the referer)
+    graph = nx.DiGraph()
+    # collect synonyms in here as we go
+    synonyms = []
 
     log("Creating taxonomy graph...")
     with zipfile.ZipFile(uksi_dwca) as dwca:
@@ -34,13 +44,12 @@ def rebuild_uksi_tables(uksi_dwca: Path):
                 rank = row["taxonRank"].lower()
 
                 if row["taxonomicStatus"] == "synonym":
-                    synonym_for_taxon_id = row["acceptedNameUsageID"]
-                    synonyms[synonym_for_taxon_id].append(
+                    synonyms.append(
                         Synonym(
                             id=taxon_id,
                             name=name,
                             rank=rank,
-                            taxon_id=synonym_for_taxon_id,
+                            taxon_id=row["acceptedNameUsageID"],
                         )
                     )
                 else:
@@ -55,30 +64,23 @@ def rebuild_uksi_tables(uksi_dwca: Path):
                     )
                     graph.add_node(taxon.id, taxon=taxon)
                     if taxon.parent_id:
-                        graph.add_edge(taxon.id, taxon.parent_id)
-                    else:
-                        roots.append(taxon)
+                        # add a link from the parent to this taxon
+                        graph.add_edge(taxon.parent_id, taxon.id)
 
     log(f"Graph creation complete")
     log(f"Details: {len(graph.nodes)} nodes, {len(graph.edges)} edges")
-    log(f"Also found {len(synonyms)} taxa with synonyms")
-    log("Writing to database...")
+    log(f"Also found {len(synonyms)} synonyms")
 
-    # add the taxon and synonym objects to the database in batches of 1000
-    for batch in batched(iter_model_objects(graph, synonyms, roots), 1000):
+    batch_size = 1000
+    log("Writing taxa to database...")
+    for batch in batched(nx.topological_sort(graph), batch_size):
+        db.session.add_all((graph.nodes[node]["taxon"] for node in batch))
+        db.session.commit()
+
+    log("Writing synonyms to database...")
+    for batch in batched(synonyms, batch_size):
         db.session.add_all(batch)
         db.session.commit()
 
     log(f"Added {Taxon.query.count()} taxa and {Synonym.query.count()} synonyms")
     log("UKSI derived tables rebuilt")
-
-
-def iter_model_objects(
-    graph: nx.Graph,
-    synonyms: dict[str, list[Synonym]],
-    roots: list[Taxon],
-) -> Iterable[Taxon | Synonym]:
-    for layer in nx.bfs_layers(graph, sources=[root.id for root in roots]):
-        taxa = [graph.nodes[node]["taxon"] for node in layer]
-        yield from taxa
-        yield from (synonym for taxon in taxa for synonym in synonyms[taxon.id])
