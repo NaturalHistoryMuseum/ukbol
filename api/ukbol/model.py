@@ -41,7 +41,6 @@ class Specimen(db.Model):
     rank: Mapped[str | None] = mapped_column()
     bin_uri: Mapped[str | None] = mapped_column(index=True)
     country: Mapped[str | None] = mapped_column(index=True)
-    # todo: do we actually need all of these?
     kingdom: Mapped[str | None] = mapped_column()
     phylum: Mapped[str | None] = mapped_column()
     cls: Mapped[str | None] = mapped_column()
