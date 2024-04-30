@@ -13,8 +13,6 @@ services:
     networks:
       ukbol_net:
         ipv4_address: 10.0.15.20
-    ports:
-      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data/
 
