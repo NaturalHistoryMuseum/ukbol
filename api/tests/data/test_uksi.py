@@ -13,7 +13,7 @@ class TestRebuildUKSITables:
         assert Taxon.query.count() == 16
         assert Synonym.query.count() == 4
 
-        biota = Taxon.query.get("NHMSYS0021048735")
+        biota = Taxon.get("NHMSYS0021048735")
         assert biota.name == "biota"
         assert biota.rank == "unranked"
         assert biota.authorship is None
@@ -26,7 +26,7 @@ class TestRebuildUKSITables:
         assert eukaryota.authorship == "(Chatton, 1925) Whittaker & Margulis, 1978"
         assert eukaryota.rank == "domain"
 
-        fungi = Taxon.query.get("NHMSYS0020535450")
+        fungi = Taxon.get("NHMSYS0020535450")
         assert fungi.name == "fungi"
         assert fungi.authorship == "R.T. Moore"
         assert fungi.rank == "kingdom"
@@ -35,15 +35,15 @@ class TestRebuildUKSITables:
         assert ascomycota.name == "ascomycota"
         assert zygomycota.name == "zygomycota"
 
-        abrothallus_cetrariae = Taxon.query.get("BMSSYS0000000001")
-        assert abrothallus_cetrariae.parent == Taxon.query.get("NHMSYS0001472727")
+        abrothallus_cetrariae = Taxon.get("BMSSYS0000000001")
+        assert abrothallus_cetrariae.parent == Taxon.get("NHMSYS0001472727")
         assert sorted(abrothallus_cetrariae.synonyms, key=lambda s: s.id) == [
-            Synonym.query.get("BMSSYS0000042050"),
-            Synonym.query.get("NHMSYS0000361124"),
+            Synonym.get("BMSSYS0000042050"),
+            Synonym.get("NHMSYS0000361124"),
         ]
-        assert Synonym.query.get("BMSSYS0000042050").authorship == "I. Kotte"
-        assert Synonym.query.get("NHMSYS0000361124").authorship is None
-        assert Synonym.query.get("BMSSYS0000000016").rank == "variety"
+        assert Synonym.get("BMSSYS0000042050").authorship == "I. Kotte"
+        assert Synonym.get("NHMSYS0000361124").authorship is None
+        assert Synonym.get("BMSSYS0000000016").rank == "variety"
 
     def test_with_old_data(self, app_no_data):
         # add a load of data
