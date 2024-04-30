@@ -1,3 +1,5 @@
+from functools import wraps
+
 from flask import Blueprint
 from sqlalchemy.orm import aliased
 
@@ -11,6 +13,16 @@ taxon_schema = TaxonSchema()
 specimen_schema = SpecimenSchema()
 
 
+def validate_taxon_id(func):
+    @wraps(func)
+    def validate(*args, **kwargs):
+        taxon = db.get_or_404(Taxon, kwargs.pop("taxon_id"))
+        kwargs["taxon"] = taxon
+        return func(*args, **kwargs)
+
+    return validate
+
+
 @blueprint.get("/taxon/roots")
 def get_roots():
     return taxon_schema.dump(
@@ -19,37 +31,33 @@ def get_roots():
 
 
 @blueprint.get("/taxon/<taxon_id>")
-def get_taxon(taxon_id: str):
-    taxon = Taxon.query.get(taxon_id)
-    if taxon is None:
-        return "Taxon not found", 404
+@validate_taxon_id
+def get_taxon(taxon: Taxon):
     return taxon_schema.dump(taxon)
 
 
 @blueprint.get("/taxon/<taxon_id>/children")
-def get_taxon_children(taxon_id: str):
+@validate_taxon_id
+def get_taxon_children(taxon: Taxon):
     return taxon_schema.dump(
-        Taxon.query.filter(Taxon.parent_id == taxon_id).order_by(Taxon.name), many=True
+        Taxon.query.filter(Taxon.parent_id == taxon.id).order_by(Taxon.name), many=True
     )
 
 
 @blueprint.get("/taxon/<taxon_id>/parents")
-def get_taxon_parents(taxon_id: str):
-    base_query = Taxon.query.filter(Taxon.id == taxon_id).cte(recursive=True)
+@validate_taxon_id
+def get_taxon_parents(taxon: Taxon):
+    base_query = Taxon.query.filter(Taxon.id == taxon.id).cte(recursive=True)
     base_alias = aliased(base_query, name="tt")
     join_query = Taxon.query.join(base_alias, Taxon.id == base_alias.c.parent_id)
     recursive_query = base_query.union(join_query)
-    return [row[0] for row in db.session.query(recursive_query).all()]
+    return [row[0] for row in db.session.query(recursive_query).all()][1:]
 
 
 @blueprint.get("/taxon/<taxon_id>/specimens")
-def get_taxon_specimens(taxon_id: str):
-    taxon = Taxon.query.get(taxon_id)
-    if taxon is None:
-        return "Taxon not found", 404
-
+@validate_taxon_id
+def get_taxon_specimens(taxon: Taxon):
     # todo: should we use the rank too?
-
     # we find the specimens from the selected taxon using a simple exact name match with
     # the accepted name plus the synonyms (if there are any)
     names = {taxon.name}
