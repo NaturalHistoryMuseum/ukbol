@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Self, Any
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
@@ -20,6 +20,10 @@ class Taxon(db.Model):
     children: Mapped[List["Taxon"]] = relationship(back_populates="parent")
     synonyms: Mapped[List["Synonym"]] = relationship(back_populates="taxon")
 
+    @classmethod
+    def get(cls, ident: Any) -> Self | None:
+        return db.session.get(cls, ident)
+
 
 # imported from uksi
 class Synonym(db.Model):
@@ -31,6 +35,10 @@ class Synonym(db.Model):
 
     # relationships
     taxon: Mapped["Taxon"] = relationship(back_populates="synonyms")
+
+    @classmethod
+    def get(cls, ident: Any) -> Self | None:
+        return db.session.get(cls, ident)
 
 
 # imported from BOLD
@@ -50,3 +58,7 @@ class Specimen(db.Model):
     genus: Mapped[str | None] = mapped_column()
     species: Mapped[str | None] = mapped_column()
     subspecies: Mapped[str | None] = mapped_column()
+
+    @classmethod
+    def get(cls, ident: Any) -> Self | None:
+        return db.session.get(cls, ident)
