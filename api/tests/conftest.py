@@ -1,12 +1,17 @@
+from pathlib import Path
+
 import pytest
 from flask import Flask
+from flask.testing import FlaskClient
 
 from ukbol.app import create_app
+from ukbol.data.bold import rebuild_bold_tables
+from ukbol.data.uksi import rebuild_uksi_tables
 from ukbol.extensions import db
 
 
 @pytest.fixture
-def app() -> Flask:
+def app_no_data() -> Flask:
     app = create_app()
 
     with app.app_context():
@@ -19,3 +24,26 @@ def app() -> Flask:
         # drop it all to make sure we leave a clean state
         db.session.close()
         db.drop_all()
+
+
+@pytest.fixture
+def app(app_no_data) -> Flask:
+    # load some uksi data
+    uksi_dwca = Path(__file__).parent / "files" / "uksi_dwca.zip"
+    rebuild_uksi_tables(uksi_dwca)
+
+    # load some bold data
+    bold_tar_gz = Path(__file__).parent / "files" / "BOLD_Public.19-Apr-2024.tar.gz"
+    rebuild_bold_tables(bold_tar_gz)
+
+    yield app_no_data
+
+
+@pytest.fixture()
+def client(app: Flask) -> FlaskClient:
+    return app.test_client()
+
+
+@pytest.fixture()
+def client_no_data(app_no_data: Flask) -> FlaskClient:
+    return app_no_data.test_client()
