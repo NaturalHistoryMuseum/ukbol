@@ -115,7 +115,7 @@ class TestIterSpecimens:
 
 
 class TestRebuildBoldTables:
-    def test_basic(self, app):
+    def test_basic(self, app_no_data):
         rebuild_bold_tables(bold_tar_gz)
 
         # there are 1000 rows in the sample bold tar.gz
@@ -125,7 +125,7 @@ class TestRebuildBoldTables:
         # there are 44 mexico country values in the sample
         assert Specimen.query.filter(Specimen.country == "mexico").count() == 44
 
-    def test_with_old_data(self, app):
+    def test_with_old_data(self, app_no_data):
         # add a load of data
         rebuild_bold_tables(bold_tar_gz)
         first_count = Specimen.query.count()

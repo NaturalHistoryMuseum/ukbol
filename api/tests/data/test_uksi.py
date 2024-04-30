@@ -7,7 +7,7 @@ uksi_dwca = Path(__file__).parent.parent / "files" / "uksi_dwca.zip"
 
 
 class TestRebuildUKSITables:
-    def test_basic(self, app):
+    def test_basic(self, app_no_data):
         rebuild_uksi_tables(uksi_dwca)
 
         assert Taxon.query.count() == 16
@@ -45,7 +45,7 @@ class TestRebuildUKSITables:
         assert Synonym.query.get("NHMSYS0000361124").authorship is None
         assert Synonym.query.get("BMSSYS0000000016").rank == "variety"
 
-    def test_with_old_data(self, app):
+    def test_with_old_data(self, app_no_data):
         # add a load of data
         rebuild_uksi_tables(uksi_dwca)
         first_taxon_count = Taxon.query.count()
