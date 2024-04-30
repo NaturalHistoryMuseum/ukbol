@@ -1,6 +1,6 @@
 from flask import Flask
 
-from ukbol.extensions import db, migrate
+from ukbol.extensions import db, migrate, ma
 from ukbol.routes import bind_routes
 
 
@@ -14,6 +14,7 @@ def create_app() -> Flask:
     # setup extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    ma.init_app(app)
 
     # import models so that they get noticed by sqlalchemy and alembic
     from ukbol.model import Taxon, Specimen, Synonym
