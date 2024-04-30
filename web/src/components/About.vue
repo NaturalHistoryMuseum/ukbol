@@ -72,7 +72,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 const steeringGroup = [
   { name: 'Ben Price', inst: 'Natural History Museum (coordinator)' },
   { name: 'Katie Clark', inst: 'Natural England' },

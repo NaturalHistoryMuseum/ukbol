@@ -16,7 +16,7 @@
         v-for="[routeName, linkText] in links"
         :to="{ name: routeName }"
         class="text-lg"
-        :class="{ 'font-bold': $route.name == routeName }"
+        :class="{ 'font-bold': $route.name === routeName }"
       >
         {{ linkText }}
       </RouterLink>
@@ -24,7 +24,7 @@
   </nav>
 </template>
 
-<script setup lang="ts">
+<script setup>
 const links = [
   ['about', 'About'],
   ['dna-barcoding', 'DNA Barcoding'],
