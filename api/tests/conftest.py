@@ -3,7 +3,6 @@ from flask import Flask
 
 from ukbol.app import create_app
 from ukbol.extensions import db
-from ukbol.utils import create_all_tables, drop_all_tables
 
 
 @pytest.fixture
