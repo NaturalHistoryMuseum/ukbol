@@ -1,7 +1,7 @@
 from flask import Flask
 
 from ukbol.extensions import db, migrate, ma
-from ukbol.routes import bind_routes
+from ukbol.routes.api import bind_api_routes
 
 
 def create_app() -> Flask:
@@ -22,10 +22,9 @@ def create_app() -> Flask:
     ma.init_app(app)
 
     # import models so that they get noticed by sqlalchemy and alembic
-    from ukbol.model import Taxon, Specimen, Synonym
 
     # setup routes
-    bind_routes(app)
+    bind_api_routes(app)
 
     return app
 
