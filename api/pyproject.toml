@@ -31,8 +31,7 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "pytest",
-    "pytest-cov",
-    "coveralls"
+    "pytest-cov"
 ]
 
 [project.urls]
