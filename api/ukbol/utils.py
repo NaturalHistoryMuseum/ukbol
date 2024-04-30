@@ -4,6 +4,11 @@ from ukbol.extensions import db
 
 
 def log(message: str):
+    """
+    Logs a message to the console with a prefixed timestamp.
+
+    :param message: the message to log
+    """
     print(f"[{datetime.now().isoformat(sep=' ')}] {message}")
 
 

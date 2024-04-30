@@ -5,6 +5,11 @@ from ukbol.routes import bind_routes
 
 
 def create_app() -> Flask:
+    """
+    Creates and returns the Flask application.
+
+    :return: the Flask application object
+    """
     app = Flask(__name__)
 
     # setup the config from env vars
