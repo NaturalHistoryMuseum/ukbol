@@ -1,7 +1,7 @@
 from flask import Flask
 
+from ukbol.api import bind_api_routes
 from ukbol.extensions import db, migrate, ma
-from ukbol.routes.api import bind_api_routes
 
 
 def create_app() -> Flask:

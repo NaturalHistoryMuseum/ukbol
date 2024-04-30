@@ -1,6 +1,6 @@
 from flask import Flask
 
-from ukbol.routes.api import taxon, status
+from ukbol.api import taxon, status
 
 
 def bind_api_routes(app: Flask):
