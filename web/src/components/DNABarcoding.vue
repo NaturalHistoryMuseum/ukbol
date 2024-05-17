@@ -1,5 +1,5 @@
 <template>
-  <div class="w-2/3 space-y-8 pt-10">
+  <div class="w-2/3 space-y-8 pt-10 pb-10">
     <section>
       <h1>DNA Barcoding</h1>
       DNA barcoding uses a short, standardized segment of an organism’s genome

@@ -1,5 +1,5 @@
 <template>
-  <div class="w-2/3 space-y-8 pt-10">
+  <div class="w-2/3 space-y-8 pt-10 pb-10">
     <section>
       <h1>About</h1>
       The UK Barcode of Life (UKBOL) project comprises a network of UK
