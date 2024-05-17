@@ -2,7 +2,11 @@
   <div class="w-full">
     <Nav />
     <main class="flex w-full justify-center">
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <KeepAlive>
+          <component :is="Component" />
+        </KeepAlive>
+      </RouterView>
     </main>
     <Footer />
   </div>
