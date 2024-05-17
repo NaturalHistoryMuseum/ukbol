@@ -2,11 +2,11 @@ import { createApp } from 'vue';
 import './style.css';
 import App from './App.vue';
 import Home from './components/Home.vue';
-import About from './components/About.vue';
-import DNABarcoding from './components/DNABarcoding.vue';
-import Data from './components/Data.vue';
-import PrioritySpecies from './components/PrioritySpecies.vue';
-import RelatedProjects from './components/RelatedProjects.vue';
+import About from './components/pages/About.vue';
+import DNABarcoding from './components/pages/DNABarcoding.vue';
+import Data from './components/pages/Data.vue';
+import PrioritySpecies from './components/pages/PrioritySpecies.vue';
+import RelatedProjects from './components/pages/RelatedProjects.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [

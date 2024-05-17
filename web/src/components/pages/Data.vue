@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import TreeNode from './TreeNode.vue';
+import TreeNode from '../tree/TreeNode.vue';
 import axios from 'axios';
 import { ref } from 'vue';
 
