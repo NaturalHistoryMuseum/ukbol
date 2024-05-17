@@ -5,7 +5,7 @@
         <input type="search" placeholder="Search..." class="p-1 w-full" />
       </div>
       <div class="overflow-y-auto p-1">
-        <TreeNode v-for="root in roots" :taxon="root" :depth="0"></TreeNode>
+        <Node v-for="root in roots" :taxon="root" :depth="0"></Node>
       </div>
     </div>
     <div class="w-4/5 bg-slate-500"></div>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import TreeNode from '../tree/TreeNode.vue';
+import Node from '../tree/Node.vue';
 import axios from 'axios';
 import { ref } from 'vue';
 

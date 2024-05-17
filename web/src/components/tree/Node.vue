@@ -13,12 +13,12 @@
         />
       </div>
 
-      <TreeNode
+      <Node
         v-for="childTaxon in childTaxa"
         :taxon="childTaxon"
         :depth="depth + 1"
       >
-      </TreeNode>
+      </Node>
     </li>
   </ul>
 </template>
