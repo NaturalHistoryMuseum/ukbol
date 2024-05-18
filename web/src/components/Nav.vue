@@ -8,7 +8,7 @@
       <RouterLink class="" to="/">
         <img
           class="p-2"
-          src="/images/logos/logo.png"
+          src="/images/logos/logoWithText.png"
           alt="UK Barcode of Life | Home"
         />
       </RouterLink>
@@ -35,7 +35,8 @@ const links = [
 </script>
 
 <style scoped>
-nav {
+nav,
+img {
   height: var(--nav-height);
 }
 </style>
