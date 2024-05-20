@@ -1,6 +1,10 @@
 <template>
   <div class="data-height flex w-full gap-4 h-screen">
-    <Sidebar></Sidebar>
+    <Suspense>
+      <Sidebar></Sidebar>
+
+      <template #fallback> Loading... </template>
+    </Suspense>
     <MainView></MainView>
   </div>
 </template>

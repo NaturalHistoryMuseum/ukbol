@@ -1,5 +1,5 @@
 <template>
-  <div class="w-4/5 bg-slate-500"></div>
+  <div class="w-3/5 bg-slate-500"></div>
 </template>
 
 <script setup></script>

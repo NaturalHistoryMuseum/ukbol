@@ -1,25 +1,26 @@
 <template>
-  <div class="w-1/5 bg-slate-200 flex flex-col">
+  <div class="w-2/5 bg-slate-200 flex flex-col">
     <div>
       <input type="search" placeholder="Search..." class="p-1 w-full" />
     </div>
-    <div class="overflow-y-auto p-1">
-      <Node v-for="root in roots" :taxon="root" :depth="0"></Node>
-    </div>
+
+    <ul class="overflow-y-auto p-1 relative">
+      <Suspense v-for="taxon in roots" :key="taxon.id">
+        <TreeNode :taxon="taxon"></TreeNode>
+
+        <template #fallback>
+          <div>Loading...</div>
+        </template>
+      </Suspense>
+    </ul>
   </div>
 </template>
 
 <script setup>
+import TreeNode from './TreeNode.vue';
 import axios from 'axios';
-import { ref } from 'vue';
-import Node from './Node.vue';
 
-const roots = ref([]);
-
-// retrieve the root taxa from the API
-axios
-  .get('/api/taxon/roots')
-  .then((response) => roots.value.push(...response.data));
+const roots = (await axios.get('/api/taxon/roots')).data;
 </script>
 
 <style scoped></style>
