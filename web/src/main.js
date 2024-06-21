@@ -14,7 +14,7 @@ const routes = [
   { path: '/', name: 'home', component: Home },
   { path: '/about', name: 'about', component: About },
   { path: '/dna-barcoding', name: 'dna-barcoding', component: DNABarcoding },
-  { path: '/data', name: 'data', component: Data },
+  { path: '/data/:taxonId?', name: 'data', component: Data },
   {
     path: '/priority-species',
     name: 'priority-species',

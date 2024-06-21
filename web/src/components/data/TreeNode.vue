@@ -1,17 +1,24 @@
 <template>
-  <li class="relative">
-    <div @click="onClick" class="cursor-pointer select-none">
-      <span class="pr-1.5" :class="nameStyles">{{ taxon.name }}</span>
+  <li class="relative scroll-m-20 whitespace-nowrap text-sm" ref="element">
+    <div
+      @click="onClick"
+      class="cursor-pointer select-none"
+      :class="{ 'font-bold': isSelected }"
+    >
+      <span class="pr-1.5" :class="nameStyles">{{
+        capitalise(taxon.name)
+      }}</span>
       <FontAwesomeIcon v-if="!!icon" :icon="icon"></FontAwesomeIcon>
-      <Spinner :loading="state === State.Loading"></Spinner>
+      <Spinner :loading="isLoading"></Spinner>
     </div>
 
-    <template v-if="hasChildren && state === State.Expanded">
-      <ul class="relative">
+    <template v-if="isExpanded">
+      <ul class="relative whitespace-nowrap">
         <TreeNode
           v-for="child in children"
           :key="child.id"
           :taxon="child"
+          ref="childRefs"
         ></TreeNode>
       </ul>
     </template>
@@ -19,80 +26,120 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faSquareMinus, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../Spinner.vue';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+import { capitalise } from '../../lib/utils.js';
 
-const State = Object.freeze({
-  Leaf: 'Leaf',
-  Expanded: 'Expanded',
-  Collapsed: 'Collapsed',
-  Loading: 'Loading',
-});
+const router = useRouter();
 
 const { taxon } = defineProps(['taxon']);
 
 // setup some constant values
 const hasChildren = taxon.children.length > 0;
-const nameStyles = ['capitalize'];
+const nameStyles = [];
 if (['genus', 'species', 'subspecies', 'variety'].includes(taxon.rank)) {
   nameStyles.push('italic');
 }
 
 // setup some reactive values
-const state = ref(hasChildren ? State.Collapsed : State.Leaf);
+// first refs to elements in the template
+const element = ref(null);
+const childRefs = ref([]);
+// next state variables
+const isSelected = ref(false);
+const isExpanded = ref(false);
+const isLoading = ref(false);
+// and finally, the node's children
 const children = ref([]);
+
+// a computed icon dependent on the current state
 const icon = computed(() => {
-  switch (state.value) {
-    case State.Expanded:
+  if (hasChildren) {
+    if (isExpanded.value) {
       return faSquareMinus;
-    case State.Collapsed:
+    } else {
       return faSquarePlus;
-    default:
-      return null;
+    }
+  } else {
+    return null;
   }
 });
 
-async function onClick() {
-  console.log(`Selected ${taxon.name} [${taxon.rank}] ${taxon.id}`);
+async function expand() {
+  if (!hasChildren) {
+    return;
+  }
 
-  switch (state.value) {
-    case State.Leaf:
-      // if it's a species, change the data view
-      break;
-    case State.Loading:
-      // we're loading child data, ignore this request
-      break;
-    case State.Expanded:
-      // collapse the tree
-      state.value = State.Collapsed;
-      break;
-    case State.Collapsed:
-      state.value = State.Loading;
-      if (hasChildren && children.value.length === 0) {
-        try {
-          const loadedChildren = (
-            await axios.get(`/api/taxon/${taxon.id}/children`)
-          ).data;
-          children.value.push(...loadedChildren);
-        } catch (error) {
-          console.error(error);
-          state.value = State.Collapsed;
-        }
-      }
-      state.value = State.Expanded;
-      break;
+  // we're already loading child data, ignore this request
+  if (isLoading.value) {
+    return;
+  }
+
+  if (children.value.length === 0) {
+    isLoading.value = true;
+    try {
+      const loadedChildren = (
+        await axios.get(`/api/taxon/${taxon.id}/children`)
+      ).data;
+      children.value.push(...loadedChildren);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+  isExpanded.value = true;
+}
+
+function collapse() {
+  isExpanded.value = false;
+}
+
+function select() {
+  isSelected.value = true;
+}
+
+function deselect() {
+  isSelected.value = false;
+}
+
+async function onClick() {
+  if (isExpanded.value) {
+    collapse();
+  } else {
+    await expand();
+    if (taxon.rank === 'species') {
+      select();
+      await router.push({ name: 'data', params: { taxonId: taxon.id } });
+    }
   }
 }
+
+async function focus(targetIds) {
+  if (targetIds.has(taxon.id)) {
+    select();
+    await expand();
+    element.value.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    deselect();
+  }
+  for (const childRef of childRefs.value) {
+    await childRef.focus(targetIds);
+  }
+}
+
+defineExpose({ focus });
 </script>
 
 <style scoped>
 /* h/t https://two-wrongs.com/draw-a-tree-structure-with-only-css.html */
 ul {
   list-style: none;
-  padding-left: 32px;
+  padding-left: 14px;
 }
 
 li::before,
@@ -103,20 +150,20 @@ li::after {
 }
 
 li::before {
-  border-top: 1px solid #000;
+  border-top: 1px solid #94a3b8;
   top: 9px;
   width: 8px;
   height: 0;
 }
 
 li::after {
-  border-left: 1px solid #000;
+  border-left: 1px solid #94a3b8;
   height: 100%;
   width: 0;
   top: 2px;
 }
 
 ul > li:last-child::after {
-  height: 8px;
+  height: 7px;
 }
 </style>

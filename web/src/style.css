@@ -13,8 +13,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --nav-height: 74px;
-  --foot-height: 100px;
+  --nav-height: 64px;
+  --foot-height: 64px;
 }
 
 a {
