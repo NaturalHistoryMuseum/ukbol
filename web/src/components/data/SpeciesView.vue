@@ -13,7 +13,7 @@
           colour="green"
         ></Badge>
       </div>
-      <div class="text-lg">
+      <div v-if="gbifTaxon.matchType !== 'NONE'" class="text-lg">
         GBIF accepted name:
         <a
           :href="`https://www.gbif.org/species/${gbifTaxon.usageKey}`"
@@ -22,6 +22,7 @@
           <Species :name="gbifTaxon.scientificName"></Species>
         </a>
       </div>
+      <div v-else class="italic">No GBIF name match found</div>
       <div v-if="taxon.synonyms.length > 0">
         UKSI Synonyms:
         <span
