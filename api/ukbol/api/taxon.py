@@ -47,7 +47,10 @@ def get_roots():
     :return: a list of Taxon serialised objects
     """
     return taxon_schema.dump(
-        Taxon.query.filter(Taxon.parent_id.is_(None)).order_by(Taxon.name), many=True
+        db.session.scalars(
+            db.select(Taxon).filter(Taxon.parent_id.is_(None)).order_by(Taxon.name)
+        ).all(),
+        many=True,
     )
 
 
@@ -75,9 +78,9 @@ def get_taxon_children(taxon: Taxon):
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
     :return: a list of child Taxon objects, serialised as a JSON
     """
-    return taxon_schema.dump(
-        Taxon.query.filter(Taxon.parent_id == taxon.id).order_by(Taxon.name), many=True
-    )
+    select = db.select(Taxon).filter_by(parent_id=taxon.id)
+    result = db.session.scalars(select.order_by(Taxon.name))
+    return taxon_schema.dump(result.all(), many=True)
 
 
 @blueprint.get("/taxon/<taxon_id>/parents")
@@ -123,11 +126,13 @@ def get_taxon_specimens(taxon: Taxon):
     # the accepted name plus the synonyms (if there are any)
     names = {taxon.name}
     names.update(synonym.name for synonym in taxon.synonyms)
-    page = db.paginate(
-        Specimen.query.filter(Specimen.name.in_(names)).order_by(
-            Specimen.name, Specimen.id
-        )
+    select = (
+        db.select(Specimen)
+        .filter(Specimen.name.in_(names))
+        .order_by(Specimen.name, Specimen.id)
     )
+
+    page = db.paginate(select)
     return {
         "count": page.total,
         "specimens": specimen_schema.dump(page.items, many=True),
@@ -152,11 +157,16 @@ def get_taxon_bins(taxon: Taxon):
     names = {taxon.name}
     names.update(synonym.name for synonym in taxon.synonyms)
     # order the results by the bin so that we can use groupby
-    query = Specimen.query.filter(
-        Specimen.name.in_(names), Specimen.bin_uri.isnot(None)
-    ).order_by(Specimen.bin_uri)
+    select = (
+        db.select(Specimen)
+        .filter(Specimen.name.in_(names))
+        .filter(Specimen.bin_uri.isnot(None))
+        .order_by(Specimen.bin_uri)
+    )
+    result = db.session.scalars(select)
+
     bins = []
-    for bin_uri, specimens in groupby(query, lambda s: s.bin_uri):
+    for bin_uri, specimens in groupby(result.all(), lambda s: s.bin_uri):
         count = 0
         uk_count = 0
         ukbol_count = 0
