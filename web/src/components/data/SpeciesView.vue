@@ -2,7 +2,12 @@
   <div class="bg-slate-100 flex flex-col">
     <div class="flex-1 p-4">
       <div class="text-2xl font-bold">
-        <Name :name="taxon.name" :authorship="taxon.authorship"></Name>
+        <Name
+          :name="taxon.name"
+          :authorship="taxon.authorship"
+          :rank="taxon.rank"
+        >
+        </Name>
       </div>
       <div class="flex gap-2 items-center pt-2 pb-2">
         <Badge label="UKSI TVK" :value="taxon.id" colour="cyan"></Badge>
@@ -19,7 +24,7 @@
           :href="`https://www.gbif.org/species/${gbifTaxon.usageKey}`"
           target="_blank"
         >
-          <Name :name="gbifTaxon.scientificName"></Name>
+          <Name :name="gbifTaxon.scientificName" :rank="taxon.rank"></Name>
         </a>
       </div>
       <div v-else class="italic">No GBIF name match found</div>
@@ -29,7 +34,11 @@
           v-for="synonym in taxon.synonyms"
           class="after:content-[',_'] last:after:content-none"
         >
-          <Name :name="synonym.name" :authorship="synonym.authorship"></Name>
+          <Name
+            :name="synonym.name"
+            :authorship="synonym.authorship"
+            :rank="synonym.rank"
+          ></Name>
         </span>
       </div>
     </div>

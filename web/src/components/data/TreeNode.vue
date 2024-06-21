@@ -5,10 +5,12 @@
       class="cursor-pointer select-none"
       :class="{ 'font-bold': isSelected }"
     >
-      <span class="pr-1.5" :class="nameStyles">{{
-        capitalise(taxon.name)
-      }}</span>
-      <FontAwesomeIcon v-if="!!icon" :icon="icon"></FontAwesomeIcon>
+      <Name :name="taxon.name" :rank="taxon.rank"></Name>
+      <FontAwesomeIcon
+        class="pl-1.5"
+        v-if="!!icon"
+        :icon="icon"
+      ></FontAwesomeIcon>
       <Spinner :loading="isLoading"></Spinner>
     </div>
 
@@ -32,7 +34,7 @@ import { faSquareMinus, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../Spinner.vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import { capitalise } from '../../lib/utils.js';
+import Name from '../Name.vue';
 
 const router = useRouter();
 
