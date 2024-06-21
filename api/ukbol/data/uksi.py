@@ -1,11 +1,8 @@
-import csv
-import zipfile
-from io import TextIOWrapper
 from itertools import batched
-from pathlib import Path
 from typing import Iterable
 
 import networkx as nx
+import requests
 
 from ukbol.data.utils import get
 from ukbol.extensions import db
@@ -13,12 +10,46 @@ from ukbol.model import Taxon, Synonym
 from ukbol.utils import log
 
 
-def rebuild_uksi_tables(uksi_dwca: Path):
+def get_from_nbn() -> Iterable[dict]:
     """
-    Given the Path to a UKSI taxonomy DwC-A file, clear out the taxon and synonym
-    tables, and then repopulate them with data derived from the DwC-A.
+    Retrieves all taxon data from NBN using their species search endpoint and yields the
+    individual records as a continuous stream of dicts.
 
-    :param uksi_dwca: the Path to a DwC-A file of the UKSI taxonomy
+    :return: yields dicts
+    """
+    url = "https://species-ws.nbnatlas.org/search"
+    params = {
+        # this seems to work, but no idea how stable this is
+        "fq": "idxtype:TAXON",
+        # their API seems to cope well with us trawling it for all its data and 200
+        # seems to be an ok chunk size
+        "pageSize": 200,
+        # fyi: this isn't a page number, it's a pure row number offset
+        "start": 0,
+    }
+
+    count = 0
+    log("Downloading taxonomy data from NBN API...")
+    while True:
+        r = requests.get(url, params=params)
+        data = r.json()
+        results = data["searchResults"]["results"]
+        if not results:
+            break
+        else:
+            count += len(results)
+            yield from results
+            params["start"] += len(results)
+        # log some progress info every 10,000 records
+        if count % 10000 == 0:
+            log(f"{count}/{data['searchResults']['totalRecords']}")
+    log(f"Downloaded {count} records from NBN API...")
+
+
+def rebuild_uksi_tables():
+    """
+    Clear out the taxon and synonym tables, and then repopulate them with data derived
+    from the NBN API.
     """
     log("Removing existing data...")
     Synonym.query.delete()
@@ -34,42 +65,45 @@ def rebuild_uksi_tables(uksi_dwca: Path):
     synonyms = []
 
     log("Creating taxonomy graph...")
-    with zipfile.ZipFile(uksi_dwca) as dwca:
-        with dwca.open("taxa.csv") as f:
-            taxa_csv = TextIOWrapper(f, encoding="utf-8", newline="")
-            reader: Iterable[dict] = csv.DictReader(taxa_csv, dialect=csv.excel)
-            for row in reader:
-                taxon_id = row["taxonID"]
-                # lowercase both the name and the rank to make matching easier
-                name = row["scientificName"].lower()
-                rank = row["taxonRank"].lower()
-                authorship = get(row, "scientificNameAuthorship")
+    for record in get_from_nbn():
+        # we only want uksi records
+        if get(record, "infoSourceName", lowercase=True) != "uksi":
+            continue
 
-                if row["taxonomicStatus"] == "synonym":
-                    synonyms.append(
-                        Synonym(
-                            id=taxon_id,
-                            name=name,
-                            authorship=authorship,
-                            rank=rank,
-                            taxon_id=row["acceptedNameUsageID"],
-                        )
-                    )
-                else:
-                    parent_id = row.get("parentNameUsageID", None)
-                    if not parent_id:
-                        parent_id = None
-                    taxon = Taxon(
-                        id=taxon_id,
-                        name=name,
-                        authorship=authorship,
-                        rank=rank,
-                        parent_id=parent_id,
-                    )
-                    graph.add_node(taxon.id, taxon=taxon)
-                    if taxon.parent_id:
-                        # add a link from the parent to this taxon
-                        graph.add_edge(taxon.parent_id, taxon.id)
+        taxon_id = record["guid"]
+        # lowercase both the name and the rank to make matching easier
+        name = record["scientificName"].lower()
+        rank = record["rank"].lower()
+        authorship = record["scientificNameAuthorship"]
+
+        if record["taxonomicStatus"] == "synonym":
+            synonyms.append(
+                Synonym(
+                    id=taxon_id,
+                    name=name,
+                    authorship=authorship,
+                    rank=rank,
+                    taxon_id=record["acceptedConceptID"],
+                )
+            )
+        else:
+            parent_id = record["parentGuid"]
+            if not parent_id:
+                parent_id = None
+            taxon = Taxon(
+                id=taxon_id,
+                name=name,
+                authorship=authorship,
+                rank=rank,
+                parent_id=parent_id,
+            )
+            graph.add_node(taxon.id, taxon=taxon)
+            if taxon.parent_id:
+                # add a link from the parent to this taxon
+                graph.add_edge(taxon.parent_id, taxon.id)
+
+    # remove synonyms we don't have the reference taxon for
+    synonyms = [syn for syn in synonyms if syn.taxon_id in graph]
 
     log(f"Graph creation complete")
     log(f"Details: {len(graph.nodes)} nodes, {len(graph.edges)} edges")

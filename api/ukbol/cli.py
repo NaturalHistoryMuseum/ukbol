@@ -21,11 +21,10 @@ def cli():
 
 
 @cli.command("rebuild-uksi")
-@click.argument("uksi_dwca", type=click.Path(exists=True, dir_okay=False))
-def rebuild_uksi(uksi_dwca: Path):
+def rebuild_uksi():
     # todo: make migrations and remove
     create_all_tables()
-    rebuild_uksi_tables(uksi_dwca)
+    rebuild_uksi_tables()
 
 
 @cli.command("rebuild-bold")

@@ -1,0 +1,202 @@
+[
+  {
+    "acceptedConceptID": null,
+    "guid": "BMSSYS0000000001",
+    "infoSourceName": "uksi",
+    "parentGuid": "NHMSYS0001472727",
+    "rank": "Species",
+    "scientificName": "Abrothallus cetrariae",
+    "scientificNameAuthorship": "I. Kotte",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "BMSSYS0000000010",
+    "infoSourceName": "uksi",
+    "parentGuid": "NHMSYS0001479898",
+    "rank": "Genus",
+    "scientificName": "Absidia",
+    "scientificNameAuthorship": "Tiegh.",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "BMSSYS0000000015",
+    "infoSourceName": "uksi",
+    "parentGuid": "BMSSYS0000000010",
+    "rank": "Species",
+    "scientificName": "Absidia cylindrospora",
+    "scientificNameAuthorship": "Hagem",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": "BMSSYS0000000015",
+    "guid": "BMSSYS0000000016",
+    "infoSourceName": "uksi",
+    "parentGuid": null,
+    "rank": "Variety",
+    "scientificName": "Absidia cylindrospora var. cylindrospora",
+    "scientificNameAuthorship": "Hagem",
+    "taxonomicStatus": "synonym"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "BMSSYS0000000023",
+    "infoSourceName": "uksi",
+    "parentGuid": "BMSSYS0000000010",
+    "rank": "Species",
+    "scientificName": "Absidia spinosa",
+    "scientificNameAuthorship": "Lendn.",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": "BMSSYS0000000023",
+    "guid": "BMSSYS0000000024",
+    "infoSourceName": "uksi",
+    "parentGuid": null,
+    "rank": "Variety",
+    "scientificName": "Absidia spinosa var. spinosa",
+    "scientificNameAuthorship": "Lendn.",
+    "taxonomicStatus": "synonym"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "BMSSYS0000042047",
+    "infoSourceName": "uksi",
+    "parentGuid": "BMSSYS0000042048",
+    "rank": "Family",
+    "scientificName": "Abrothallaceae",
+    "scientificNameAuthorship": "P\u00e9rez-Ort. & Suija",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "BMSSYS0000042048",
+    "infoSourceName": "uksi",
+    "parentGuid": "NHMSYS0020535847",
+    "rank": "Order",
+    "scientificName": "Abrothallales",
+    "scientificNameAuthorship": "P\u00e9rez-Ort. & Suija",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": "BMSSYS0000000001",
+    "guid": "BMSSYS0000042050",
+    "infoSourceName": "uksi",
+    "parentGuid": null,
+    "rank": "Species",
+    "scientificName": "Abrothallus cetrariae",
+    "scientificNameAuthorship": "I. Kotte",
+    "taxonomicStatus": "synonym"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "BMSSYS0000048172",
+    "infoSourceName": "uksi",
+    "parentGuid": "NHMSYS0001502136",
+    "rank": "Order",
+    "scientificName": "Mucorales",
+    "scientificNameAuthorship": "Fr.",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "BMSSYS0000052700",
+    "infoSourceName": "uksi",
+    "parentGuid": "NHMSYS0020535450",
+    "rank": "Phylum",
+    "scientificName": "Zygomycota",
+    "scientificNameAuthorship": "Moreau",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "NBNSYS0100003095",
+    "infoSourceName": "uksi",
+    "parentGuid": "NHMSYS0021048735",
+    "rank": "Domain",
+    "scientificName": "Eukaryota",
+    "scientificNameAuthorship": "(Chatton, 1925) Whittaker & Margulis, 1978",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": "BMSSYS0000000001",
+    "guid": "NHMSYS0000361124",
+    "infoSourceName": "uksi",
+    "parentGuid": null,
+    "rank": "Species",
+    "scientificName": "Abrothallus cetrariae",
+    "scientificNameAuthorship": null,
+    "taxonomicStatus": "synonym"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "NHMSYS0001472727",
+    "infoSourceName": "uksi",
+    "parentGuid": "BMSSYS0000042047",
+    "rank": "Genus",
+    "scientificName": "Abrothallus",
+    "scientificNameAuthorship": "De Not.",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "NHMSYS0001479898",
+    "infoSourceName": "uksi",
+    "parentGuid": "BMSSYS0000048172",
+    "rank": "Family",
+    "scientificName": "Cunninghamellaceae",
+    "scientificNameAuthorship": "Naumov ex R.K. Benj.",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "NHMSYS0001502136",
+    "infoSourceName": "uksi",
+    "parentGuid": "BMSSYS0000052700",
+    "rank": "Class",
+    "scientificName": "Zygomycetes",
+    "scientificNameAuthorship": "G. Winter",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "NHMSYS0020535046",
+    "infoSourceName": "uksi",
+    "parentGuid": "NHMSYS0020535450",
+    "rank": "Phylum",
+    "scientificName": "Ascomycota",
+    "scientificNameAuthorship": "Caval.-Sm.",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "NHMSYS0020535450",
+    "infoSourceName": "uksi",
+    "parentGuid": "NBNSYS0100003095",
+    "rank": "Kingdom",
+    "scientificName": "Fungi",
+    "scientificNameAuthorship": "R.T. Moore",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "NHMSYS0020535847",
+    "infoSourceName": "uksi",
+    "parentGuid": "NHMSYS0020535046",
+    "rank": "Subphylum",
+    "scientificName": "Pezizomycotina",
+    "scientificNameAuthorship": "O.E. Erikss. & Winka",
+    "taxonomicStatus": "accepted"
+  },
+  {
+    "acceptedConceptID": null,
+    "guid": "NHMSYS0021048735",
+    "infoSourceName": "uksi",
+    "parentGuid": null,
+    "rank": "Unranked",
+    "scientificName": "Biota",
+    "scientificNameAuthorship": null,
+    "taxonomicStatus": "accepted"
+  }
+]
