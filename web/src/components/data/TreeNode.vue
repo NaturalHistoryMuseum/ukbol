@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faSquareMinus, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../Spinner.vue';
@@ -123,7 +123,9 @@ async function focus(targetIds) {
   if (targetIds.has(taxon.id)) {
     select();
     await expand();
-    element.value.scrollIntoView({ behavior: 'smooth' });
+    await nextTick(() => {
+      element.value.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
   } else {
     deselect();
   }
