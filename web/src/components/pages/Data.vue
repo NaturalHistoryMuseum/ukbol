@@ -1,7 +1,7 @@
 <template>
   <div class="data-height flex w-full h-screen">
-    <Sidebar class="flex-1 w-max" :taxon-id="taxonId"></Sidebar>
-    <div class="flex-auto w-4/5">
+    <Sidebar class="w-1/4" :taxon-id="taxonId"></Sidebar>
+    <div class="w-3/4">
       <div v-if="!taxonId" class="p-4 h-full text-lg text-center">
         Select a name in the tree to get started
       </div>
