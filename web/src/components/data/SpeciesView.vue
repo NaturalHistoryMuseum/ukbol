@@ -63,7 +63,6 @@
             </td>
             <td>{{ binGroup.count }}</td>
             <td>{{ binGroup.ukCount }}</td>
-            <td>{{ binGroup.ukbolCount }}</td>
             <td>{{ Array.from(binGroup.names).join(', ') }}</td>
             <td></td>
             <td></td>
@@ -84,7 +83,6 @@ const headers = [
   'BIN',
   '# specimens (all)',
   '# specimens (UK)',
-  '# specimens (DS-UKBoL)',
   'Names in BIN',
   'Maximum distance within BIN',
   'Distance to Nearest Neighbour BIN',
