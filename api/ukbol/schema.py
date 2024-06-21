@@ -29,6 +29,16 @@ class TaxonSchema(ma.SQLAlchemySchema):
     synonyms = fields.Nested(SynonymSchema(), many=True)
 
 
+class TaxonSuggestionSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Taxon
+        include_fk = False
+
+    id = ma.auto_field()
+    name = ma.auto_field()
+    rank = ma.auto_field()
+
+
 class SpecimenSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Specimen

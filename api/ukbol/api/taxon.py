@@ -1,18 +1,41 @@
 from functools import wraps
 from itertools import groupby
 
-from flask import Blueprint
+from flask import Blueprint, request
+from sqlalchemy import Select
 from sqlalchemy.orm import aliased
 
 from ukbol.extensions import db
 from ukbol.model import Taxon, Specimen
-from ukbol.schema import TaxonSchema, SpecimenSchema
+from ukbol.schema import TaxonSchema, SpecimenSchema, TaxonSuggestionSchema
+from ukbol.utils import clamp
 
 blueprint = Blueprint("taxon_api", __name__)
 
 # create the schemas we're going to use to build JSON responses
 taxon_schema = TaxonSchema()
 specimen_schema = SpecimenSchema()
+suggestion_schema = TaxonSuggestionSchema()
+
+
+def add_ignore_ranks_filter(select: Select) -> Select:
+    """
+    Adds a clause to the given select query to ignore taxon ranks. The ranks to ignore
+    are extracted from the request's query parameters. If no ranks are specified, no
+    additional clause is added and all ranks are allowed in the query.
+
+    The query parameter which is used to specify the ranks to ignore is called
+    "ignore_ranks" and should contain a comma separated list of ranks.
+
+    :param select: the select query to use
+    :return: the select query with the added clause if necessary
+    """
+    ignore_ranks = request.args.get("ignore_ranks", "", type=str)
+    if not ignore_ranks:
+        return select
+
+    to_ignore = [rank.strip() for rank in ignore_ranks.split(",")]
+    return select.filter(Taxon.rank.not_in(to_ignore))
 
 
 def validate_taxon_id(func):
@@ -54,6 +77,40 @@ def get_roots():
     )
 
 
+@blueprint.get("/taxon/ranks")
+def get_ranks():
+    """
+    Returns a list of the available taxon ranks in the taxonomy.
+
+    :return: a list of ranks
+    """
+    return db.session.scalars(db.select(Taxon.rank).distinct()).all()
+
+
+@blueprint.get("/taxon/suggest")
+def get_suggestions():
+    """
+    Given a query parameter, returns a list of suggested names from the taxonomy that
+    match the query. Names are matched just using a full wildcard query so the matching
+    isn't particularly sophisticated. A size parameter is available to limit the number
+    of results (min 1, max 20). Use ignore_ranks to exclude taxa with ranks in the given
+    comma-separated list of ranks from the results.
+
+    :return: a list of suggested taxa
+    """
+    query = request.args.get("query", "", type=str)
+    size = clamp(request.args.get("size", 10, type=int), 1, 20)
+
+    select = db.select(Taxon)
+    if query:
+        select = select.filter(Taxon.name.ilike(f"%{query}%"))
+
+    select = add_ignore_ranks_filter(select)
+    result = db.session.scalars(select.order_by(Taxon.name).limit(size))
+
+    return suggestion_schema.dump(result.all(), many=True)
+
+
 @blueprint.get("/taxon/<taxon_id>")
 @validate_taxon_id
 def get_taxon(taxon: Taxon):
@@ -75,10 +132,14 @@ def get_taxon_children(taxon: Taxon):
     serialised as JSON. If the taxon doesn't exist, a 404 is raised. All direct children
     are returned. The Taxon returned are order by name ascending.
 
+    Use ignore_ranks to exclude taxa with ranks in the given comma-separated list of
+    ranks from the results.
+
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
     :return: a list of child Taxon objects, serialised as a JSON
     """
     select = db.select(Taxon).filter_by(parent_id=taxon.id)
+    select = add_ignore_ranks_filter(select)
     result = db.session.scalars(select.order_by(Taxon.name))
     return taxon_schema.dump(result.all(), many=True)
 

@@ -18,3 +18,15 @@ def create_all_tables():
 
 def drop_all_tables():
     db.drop_all()
+
+
+def clamp(value: int, minimum: int, maximum: int) -> int:
+    """
+    Clamps the given value between the minimum and maximum values.
+
+    :param value: the value to clamp
+    :param minimum: the minimum allowed value
+    :param maximum: the maximum allow value
+    :return: the clamped value
+    """
+    return max(min(value, maximum), minimum)
