@@ -1,4 +1,5 @@
 from functools import wraps
+from itertools import groupby
 
 from flask import Blueprint
 from sqlalchemy.orm import aliased
@@ -131,3 +132,50 @@ def get_taxon_specimens(taxon: Taxon):
         "count": page.total,
         "specimens": specimen_schema.dump(page.items, many=True),
     }
+
+
+@blueprint.get("/taxon/<taxon_id>/bins")
+@validate_taxon_id
+def get_taxon_bins(taxon: Taxon):
+    """
+    Given a taxon_id as part of the path, matches BOLD specimens with the same taxon
+    name, groups them by their assigned BIN and then returns a list of all bins in
+    descending count order with details about counts etc.
+
+    The BOLD specimens are matched in the local database using a direct lowercase string
+    match currently. All synonyms of the taxon are also used during matching.
+
+    :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
+    :return: a list of JSON objects representing a single BIN
+    """
+    # todo: how do we calculate ukbol count?
+    names = {taxon.name}
+    names.update(synonym.name for synonym in taxon.synonyms)
+    # order the results by the bin so that we can use groupby
+    query = Specimen.query.filter(
+        Specimen.name.in_(names), Specimen.bin_uri.isnot(None)
+    ).order_by(Specimen.bin_uri)
+    bins = []
+    for bin_uri, specimens in groupby(query, lambda s: s.bin_uri):
+        count = 0
+        uk_count = 0
+        ukbol_count = 0
+        names = set()
+        for specimen in specimens:
+            count += 1
+            if specimen.country == "united kingdom":
+                uk_count += 1
+            names.add(specimen.name)
+
+        # flask doesn't like None keys so turn them into a string if they appear
+        bins.append(
+            {
+                "bin": bin_uri,
+                "count": count,
+                "ukCount": uk_count,
+                "ukbolCount": ukbol_count,
+                "names": sorted(names),
+            }
+        )
+    # return sorted by specimen count
+    return sorted(bins, key=lambda bin_info: bin_info["count"], reverse=True)
