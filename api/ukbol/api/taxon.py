@@ -214,7 +214,6 @@ def get_taxon_bins(taxon: Taxon):
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
     :return: a list of JSON objects representing a single BIN
     """
-    # todo: how do we calculate ukbol count?
     names = {taxon.name}
     names.update(synonym.name for synonym in taxon.synonyms)
     # order the results by the bin so that we can use groupby
@@ -230,7 +229,6 @@ def get_taxon_bins(taxon: Taxon):
     for bin_uri, specimens in groupby(result.all(), lambda s: s.bin_uri):
         count = 0
         uk_count = 0
-        ukbol_count = 0
         names = set()
         for specimen in specimens:
             count += 1
@@ -244,7 +242,6 @@ def get_taxon_bins(taxon: Taxon):
                 "bin": bin_uri,
                 "count": count,
                 "ukCount": uk_count,
-                "ukbolCount": ukbol_count,
                 "names": sorted(names),
             }
         )
