@@ -11,6 +11,11 @@
       </div>
       <div class="flex gap-2 items-center pt-2 pb-2">
         <Badge label="UKSI TVK" :value="taxon.id" colour="cyan"></Badge>
+        <Badge
+          label="Rank"
+          :value="capitalise(taxon.rank)"
+          colour="purple"
+        ></Badge>
         <Badge label="Specimens" :value="specimenCount" colour="orange"></Badge>
         <Badge
           label="Clusters"
@@ -85,6 +90,7 @@
 import axios from 'axios';
 import Name from '../Name.vue';
 import Badge from '../Badge.vue';
+import { capitalise } from '../../lib/utils.js';
 
 const headers = [
   'BIN',

@@ -21,4 +21,8 @@ const { label, value, colour } = defineProps(['label', 'value', 'colour']);
 .green {
   @apply bg-green-600;
 }
+
+.purple {
+  @apply bg-purple-500;
+}
 </style>
