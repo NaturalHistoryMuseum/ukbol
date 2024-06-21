@@ -2,7 +2,7 @@
   <div class="bg-slate-100 flex flex-col">
     <div class="flex-1 p-4">
       <div class="text-2xl font-bold">
-        <Species :name="taxon.name" :authorship="taxon.authorship"></Species>
+        <Name :name="taxon.name" :authorship="taxon.authorship"></Name>
       </div>
       <div class="flex gap-2 items-center pt-2 pb-2">
         <Badge label="UKSI TVK" :value="taxon.id" colour="cyan"></Badge>
@@ -19,7 +19,7 @@
           :href="`https://www.gbif.org/species/${gbifTaxon.usageKey}`"
           target="_blank"
         >
-          <Species :name="gbifTaxon.scientificName"></Species>
+          <Name :name="gbifTaxon.scientificName"></Name>
         </a>
       </div>
       <div v-else class="italic">No GBIF name match found</div>
@@ -29,10 +29,7 @@
           v-for="synonym in taxon.synonyms"
           class="after:content-[',_'] last:after:content-none"
         >
-          <Species
-            :name="synonym.name"
-            :authorship="synonym.authorship"
-          ></Species>
+          <Name :name="synonym.name" :authorship="synonym.authorship"></Name>
         </span>
       </div>
     </div>
@@ -77,7 +74,7 @@
 
 <script setup>
 import axios from 'axios';
-import Species from '../Species.vue';
+import Name from '../Name.vue';
 import Badge from '../Badge.vue';
 
 const headers = [
