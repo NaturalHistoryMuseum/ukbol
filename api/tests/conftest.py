@@ -4,6 +4,7 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
+from tests.data.test_uksi import mock_nbn_records
 from ukbol.app import create_app
 from ukbol.data.bold import rebuild_bold_tables
 from ukbol.data.uksi import rebuild_uksi_tables
@@ -29,8 +30,8 @@ def app_no_data() -> Flask:
 @pytest.fixture
 def app(app_no_data) -> Flask:
     # load some uksi data
-    uksi_dwca = Path(__file__).parent / "files" / "uksi_dwca.zip"
-    rebuild_uksi_tables(uksi_dwca)
+    with mock_nbn_records():
+        rebuild_uksi_tables()
 
     # load some bold data
     bold_tar_gz = Path(__file__).parent / "files" / "BOLD_Public.19-Apr-2024.tar.gz"
