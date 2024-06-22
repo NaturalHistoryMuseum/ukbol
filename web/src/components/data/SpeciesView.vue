@@ -1,6 +1,6 @@
 <template>
   <div class="bg-slate-100 flex flex-col h-full">
-    <div class="flex-1 p-4">
+    <div class="p-4">
       <a :href="phylopicData.link" target="_blank" class="w-16 float-right">
         <img :src="phylopicData.url" alt="phylopic image" />
       </a>
