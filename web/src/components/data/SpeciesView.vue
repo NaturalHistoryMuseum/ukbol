@@ -1,6 +1,9 @@
 <template>
   <div class="bg-slate-100 flex flex-col">
     <div class="flex-1 p-4">
+      <a :href="phylopicData.link" target="_blank" class="w-16 float-right">
+        <img :src="phylopicData.url" alt="phylopic image" />
+      </a>
       <div class="text-2xl font-bold">
         <Name
           :name="taxon.name"
@@ -91,6 +94,7 @@ import axios from 'axios';
 import Name from '../Name.vue';
 import Badge from '../Badge.vue';
 import { capitalise } from '../../lib/utils.js';
+import { getPhylopicData } from '../../lib/api.js';
 
 const headers = [
   'BIN',
@@ -110,6 +114,9 @@ const gbifTaxon = (
     `https://api.gbif.org/v1/species/match?name=${taxon.name}&rank=SPECIES&strict=true`,
   )
 ).data;
+
+const phylopicData = await getPhylopicData(gbifTaxon);
+
 const binGroups = (await axios.get(`/api/taxon/${taxonId}/bins`)).data;
 const specimenCount = binGroups.reduce((acc, bin) => acc + bin.count, 0);
 </script>
