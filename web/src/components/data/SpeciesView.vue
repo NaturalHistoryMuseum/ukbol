@@ -52,7 +52,7 @@
     </div>
     <div class="px-2 overflow-y-auto">
       <table class="w-full table-auto text-left text-sm">
-        <thead>
+        <thead class="sticky top-0 z-10">
           <tr>
             <th
               v-for="header in headers"
