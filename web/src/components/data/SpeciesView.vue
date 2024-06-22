@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-100 flex flex-col">
+  <div class="bg-slate-100 flex flex-col h-full">
     <div class="flex-1 p-4">
       <a :href="phylopicData.link" target="_blank" class="w-16 float-right">
         <img :src="phylopicData.url" alt="phylopic image" />
@@ -50,7 +50,7 @@
         </span>
       </div>
     </div>
-    <div class="px-2">
+    <div class="px-2 overflow-y-auto">
       <table class="w-full table-auto text-left text-sm">
         <thead>
           <tr>

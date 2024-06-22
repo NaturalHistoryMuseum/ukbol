@@ -1,5 +1,5 @@
 <template>
-  <div class="data-height flex w-full h-screen">
+  <div class="data-height flex w-full">
     <Sidebar class="w-1/4" :taxon-id="taxonId"></Sidebar>
     <div class="w-3/4">
       <div v-if="!taxonId" class="p-4 h-full text-lg text-center">
