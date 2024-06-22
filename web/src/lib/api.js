@@ -1,5 +1,13 @@
 import axios from 'axios';
 
+export async function getTaxon(taxonId) {
+  return (await axios.get(`/api/taxon/${taxonId}`)).data;
+}
+
+export async function getTaxonBins(taxonId) {
+  return (await axios.get(`/api/taxon/${taxonId}/bins`)).data;
+}
+
 export async function getGBIFData(name) {
   return (
     await axios.get(

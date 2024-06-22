@@ -90,11 +90,15 @@
 </template>
 
 <script setup>
-import axios from 'axios';
 import Name from '../Name.vue';
 import Badge from '../Badge.vue';
 import { capitalise } from '../../lib/utils.js';
-import { getGBIFData, getPhylopicData } from '../../lib/api.js';
+import {
+  getGBIFData,
+  getPhylopicData,
+  getTaxon,
+  getTaxonBins,
+} from '../../lib/api.js';
 
 const headers = [
   'BIN',
@@ -108,11 +112,11 @@ const headers = [
 
 const { taxonId } = defineProps(['taxonId']);
 
-const taxon = (await axios.get(`/api/taxon/${taxonId}`)).data;
+const taxon = await getTaxon(taxonId);
 const gbifTaxon = await getGBIFData(taxon.name);
 const phylopicData = await getPhylopicData(gbifTaxon);
 
-const binGroups = (await axios.get(`/api/taxon/${taxonId}/bins`)).data;
+const binGroups = await getTaxonBins(taxonId);
 const specimenCount = binGroups.reduce((acc, bin) => acc + bin.count, 0);
 </script>
 
