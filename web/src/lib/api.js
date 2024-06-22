@@ -1,5 +1,13 @@
 import axios from 'axios';
 
+export async function getGBIFData(name) {
+  return (
+    await axios.get(
+      `https://api.gbif.org/v1/species/match?name=${name}&rank=SPECIES&strict=true`,
+    )
+  ).data;
+}
+
 export async function getPhylopicData(gbifTaxon) {
   const keys = [
     'speciesKey',

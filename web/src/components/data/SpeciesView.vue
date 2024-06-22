@@ -94,7 +94,7 @@ import axios from 'axios';
 import Name from '../Name.vue';
 import Badge from '../Badge.vue';
 import { capitalise } from '../../lib/utils.js';
-import { getPhylopicData } from '../../lib/api.js';
+import { getGBIFData, getPhylopicData } from '../../lib/api.js';
 
 const headers = [
   'BIN',
@@ -109,12 +109,7 @@ const headers = [
 const { taxonId } = defineProps(['taxonId']);
 
 const taxon = (await axios.get(`/api/taxon/${taxonId}`)).data;
-const gbifTaxon = (
-  await axios.get(
-    `https://api.gbif.org/v1/species/match?name=${taxon.name}&rank=SPECIES&strict=true`,
-  )
-).data;
-
+const gbifTaxon = await getGBIFData(taxon.name);
 const phylopicData = await getPhylopicData(gbifTaxon);
 
 const binGroups = (await axios.get(`/api/taxon/${taxonId}/bins`)).data;
