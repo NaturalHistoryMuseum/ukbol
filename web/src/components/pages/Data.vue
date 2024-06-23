@@ -7,6 +7,9 @@
       </div>
       <Suspense v-else>
         <SpeciesView :taxon-id="taxonId" :key="taxonId"></SpeciesView>
+        <template #fallback>
+          <Spinner :loading="true"></Spinner>
+        </template>
       </Suspense>
     </div>
   </div>
@@ -17,6 +20,7 @@ import Sidebar from '../data/Sidebar.vue';
 import SpeciesView from '../data/SpeciesView.vue';
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import Spinner from '../Spinner.vue';
 
 const route = useRoute();
 
