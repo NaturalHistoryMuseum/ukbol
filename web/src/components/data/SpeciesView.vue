@@ -1,7 +1,12 @@
 <template>
   <div class="bg-slate-100 flex flex-col h-full">
     <div class="p-4">
-      <a :href="phylopicData.link" target="_blank" class="w-16 float-right">
+      <a
+        v-if="!!phylopicData"
+        :href="phylopicData.link"
+        target="_blank"
+        class="w-16 float-right"
+      >
         <img :src="phylopicData.url" alt="phylopic image" />
       </a>
       <div class="text-2xl font-bold">
@@ -26,7 +31,7 @@
           colour="green"
         ></Badge>
       </div>
-      <div v-if="gbifTaxon.matchType !== 'NONE'" class="text-lg">
+      <div v-if="!!gbifTaxon" class="text-lg">
         GBIF accepted name:
         <a
           :href="`https://www.gbif.org/species/${gbifTaxon.usageKey}`"
@@ -113,8 +118,8 @@ const headers = [
 const { taxonId } = defineProps(['taxonId']);
 
 const taxon = await getTaxon(taxonId);
-const gbifTaxon = await getGBIFData(taxon.name);
-const phylopicData = await getPhylopicData(gbifTaxon);
+const gbifTaxon = await getGBIFData(taxon.name, taxon.rank);
+const phylopicData = !gbifTaxon ? null : await getPhylopicData(gbifTaxon);
 
 const binGroups = await getTaxonBins(taxonId);
 const specimenCount = binGroups.reduce((acc, bin) => acc + bin.count, 0);

@@ -4,16 +4,40 @@ export async function getTaxon(taxonId) {
   return (await axios.get(`/api/taxon/${taxonId}`)).data;
 }
 
+export async function getRoots() {
+  return (await axios.get('/api/taxon/roots')).data;
+}
+
+export async function getTaxonParents(taxonId) {
+  return (await axios.get(`/api/taxon/${taxonId}/parents`)).data;
+}
+
+export async function getSuggestions(search, size) {
+  return (
+    await axios.get('/api/taxon/suggest', {
+      params: {
+        query: search,
+        size: size,
+      },
+    })
+  ).data;
+}
+
 export async function getTaxonBins(taxonId) {
   return (await axios.get(`/api/taxon/${taxonId}/bins`)).data;
 }
 
-export async function getGBIFData(name) {
-  return (
+export async function getGBIFData(name, rank) {
+  const data = (
     await axios.get(
-      `https://api.gbif.org/v1/species/match?name=${name}&rank=SPECIES&strict=true`,
+      `https://api.gbif.org/v1/species/match?name=${name}&rank=${rank}&strict=true`,
     )
   ).data;
+  if (data.matchType === 'NONE') {
+    return null;
+  } else {
+    return data;
+  }
 }
 
 export async function getPhylopicData(gbifTaxon) {
@@ -26,7 +50,10 @@ export async function getPhylopicData(gbifTaxon) {
     'phylumKey',
     'kingdomKey',
   ];
-  const objectIds = keys.map((key) => gbifTaxon[key]).join(',');
+  const objectIds = keys
+    .filter((key) => Object.hasOwn(gbifTaxon, key))
+    .map((key) => gbifTaxon[key])
+    .join(',');
   // search for the image URL using the GBIF IDs
   const resolveResponse = (
     await axios.get('https://api.phylopic.org/resolve/gbif.org/species', {
@@ -34,7 +61,7 @@ export async function getPhylopicData(gbifTaxon) {
     })
   ).data;
   const relativeImageUrl = resolveResponse['_links']['primaryImage']['href'];
-  const fullImageUrl = `https://api.phylopic.org/${relativeImageUrl}`;
+  const fullImageUrl = `https://api.phylopic.org${relativeImageUrl}`;
   // get the image data
   const imageResponse = (await axios.get(fullImageUrl)).data;
   const thumbnailUrl = imageResponse['_links']['thumbnailFiles'][0]['href'];

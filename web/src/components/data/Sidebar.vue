@@ -35,9 +35,9 @@
 
 <script setup>
 import TreeNode from './TreeNode.vue';
-import axios from 'axios';
 import { onMounted, ref, toRef, watch } from 'vue';
 import Spinner from '../Spinner.vue';
+import { getRoots, getSuggestions, getTaxonParents } from '../../lib/api.js';
 
 const props = defineProps(['taxonId']);
 const search = ref('');
@@ -47,7 +47,7 @@ const rootRefs = ref([]);
 const taxonId = toRef(props, 'taxonId');
 
 async function setRoots() {
-  roots.value = (await axios.get('/api/taxon/roots')).data;
+  roots.value = await getRoots();
 }
 
 async function focus() {
@@ -55,8 +55,7 @@ async function focus() {
     return;
   }
   // get the taxa's parent IDs
-  const parentIds = (await axios.get(`/api/taxon/${taxonId.value}/parents`))
-    .data;
+  const parentIds = await getTaxonParents(taxonId.value);
   // create a set containing the parent IDs and the actual taxonID
   const targetIds = new Set([taxonId.value, ...parentIds]);
   for (const rootRef of rootRefs.value) {
@@ -69,20 +68,13 @@ function clearSearch() {
   suggestions.value = [];
 }
 
-async function getSuggestions() {
-  suggestions.value = (
-    await axios.get('/api/taxon/suggest', {
-      params: {
-        query: search.value,
-        size: 10,
-      },
-    })
-  ).data;
+async function updateSuggestions() {
+  suggestions.value = await getSuggestions(search.value, 10);
 }
 
 watch(search, async () => {
   if (!!search.value) {
-    await getSuggestions();
+    await updateSuggestions();
   } else {
     suggestions.value = [];
   }
