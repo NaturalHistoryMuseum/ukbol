@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from ukbol.extensions import db
-
 
 def log(message: str):
     """
@@ -10,14 +8,6 @@ def log(message: str):
     :param message: the message to log
     """
     print(f"[{datetime.now().isoformat(sep=' ')}] {message}")
-
-
-def create_all_tables():
-    db.create_all()
-
-
-def drop_all_tables():
-    db.drop_all()
 
 
 def clamp(value: int, minimum: int, maximum: int) -> int:
