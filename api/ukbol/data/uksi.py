@@ -9,6 +9,8 @@ from ukbol.extensions import db
 from ukbol.model import Taxon, Synonym
 from ukbol.utils import log
 
+USER_AGENT = "UKBoL taxonomy updater"
+
 
 def get_from_nbn() -> Iterable[dict]:
     """
@@ -31,7 +33,7 @@ def get_from_nbn() -> Iterable[dict]:
     count = 0
     log("Downloading taxonomy data from NBN API...")
     while True:
-        r = requests.get(url, params=params)
+        r = requests.get(url, params=params, headers={"user-agent": USER_AGENT})
         data = r.json()
         results = data["searchResults"]["results"]
         if not results:
@@ -98,14 +100,29 @@ def rebuild_uksi_tables():
                 parent_id=parent_id,
             )
             graph.add_node(taxon.id, taxon=taxon)
-            if taxon.parent_id:
-                # add a link from the parent to this taxon
-                graph.add_edge(taxon.parent_id, taxon.id)
 
     # remove synonyms we don't have the reference taxon for
     synonyms = [syn for syn in synonyms if syn.taxon_id in graph]
 
-    log(f"Graph creation complete")
+    # add edges linking children to parents
+    for taxon_id, data in graph.nodes(data=True):
+        taxon = data["taxon"]
+        if taxon.parent_id:
+            if taxon.parent_id in graph:
+                # add a link from the parent to this taxon
+                graph.add_edge(taxon.parent_id, taxon_id)
+            else:
+                # the taxon has a link to a parent we don't know, do not create an edge
+                # and remove the parent ID reference from the taxon to avoid breaking
+                # the database's foreign key constraints on the parent ID. There are two
+                # scenarios where this might happen (at least that I can think of):
+                # firstly, the taxon parent isn't in the UKSI part of the NBN taxonomy,
+                # I haven't seen this happen, but I guess it's possible? Secondly, the
+                # taxon links to a parent ID that doesn't exist, which I have seen
+                # happen and is why this code exists in the first place.
+                taxon.parent_id = None
+
+    log("Graph creation complete")
     log(f"Details: {len(graph.nodes)} nodes, {len(graph.edges)} edges")
     log(f"Also found {len(synonyms)} synonyms")
 
