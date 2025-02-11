@@ -3,7 +3,7 @@ version: "3"
 services:
   db:
     build:
-      context: ./docker/db
+      context: ./build/db
       dockerfile: Dockerfile
     environment:
       POSTGRES_USER: admin
