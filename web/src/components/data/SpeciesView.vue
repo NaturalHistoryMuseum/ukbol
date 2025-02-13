@@ -102,9 +102,9 @@
             <td>{{ binGroup.count }}</td>
             <td>{{ binGroup.ukCount }}</td>
             <td>{{ Array.from(binGroup.names).join(', ') }}</td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <!--            <td></td>-->
+            <!--            <td></td>-->
+            <!--            <td></td>-->
           </tr>
         </tbody>
       </table>
@@ -132,9 +132,9 @@ const headers = [
   '# specimens (all)',
   '# specimens (UK)',
   'Names in BIN',
-  'Maximum distance within BIN',
-  'Distance to Nearest Neighbour BIN',
-  'Preferred BIN?',
+  // 'Maximum distance within BIN',
+  // 'Distance to Nearest Neighbour BIN',
+  // 'Preferred BIN?',
 ];
 
 const { taxonId } = defineProps(['taxonId']);
