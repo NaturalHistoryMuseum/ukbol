@@ -2,13 +2,16 @@
   <div class="data-height flex w-full">
     <Sidebar class="w-1/4" :taxon-id="taxonId"></Sidebar>
     <div class="w-3/4">
-      <div v-if="!taxonId" class="p-4 h-full text-lg text-center">
-        Select a name in the tree to get started
+      <div
+        v-if="!taxonId"
+        class="p-4 h-full text-lg text-center content-center"
+      >
+        Select a name from the tree to the left to get started
       </div>
       <Suspense v-else>
         <SpeciesView :taxon-id="taxonId" :key="taxonId"></SpeciesView>
         <template #fallback>
-          <Spinner :loading="true"></Spinner>
+          <Spinner class="content-center" :loading="true"></Spinner>
         </template>
       </Suspense>
     </div>
