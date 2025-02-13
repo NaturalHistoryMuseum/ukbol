@@ -123,6 +123,7 @@ import {
   getPhylopicData,
   getTaxon,
   getTaxonBins,
+  buildDownloadUrl,
 } from '../../lib/api.js';
 import { computed } from 'vue';
 
@@ -145,7 +146,7 @@ const binGroups = await getTaxonBins(taxonId);
 const specimenCount = binGroups.reduce((acc, bin) => acc + bin.count, 0);
 
 const downloadUrl = computed(() => {
-  return `/api/taxon/${taxonId}/download/bins`;
+  return buildDownloadUrl(taxonId);
 });
 </script>
 

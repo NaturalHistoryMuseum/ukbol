@@ -71,3 +71,7 @@ export async function getPhylopicData(gbifTaxon) {
     link: `https://phylopic.org${relativeImageUrl}`,
   };
 }
+
+export function buildDownloadUrl(taxonId) {
+  return `/api/taxon/${taxonId}/download/bins`;
+}
