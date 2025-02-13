@@ -64,10 +64,10 @@ export async function getPhylopicData(gbifTaxon) {
   const fullImageUrl = `https://api.phylopic.org${relativeImageUrl}`;
   // get the image data
   const imageResponse = (await axios.get(fullImageUrl)).data;
-  const thumbnailUrl = imageResponse['_links']['thumbnailFiles'][0]['href'];
-  // return the thumbnail url and the full image url for credit linking
+  const svgUrl = imageResponse['_links']['vectorFile']['href'];
+  // return the SVG url and the full image url for credit linking
   return {
-    url: thumbnailUrl,
-    link: `https://phylopic.org/${relativeImageUrl}`,
+    url: svgUrl,
+    link: `https://phylopic.org${relativeImageUrl}`,
   };
 }
