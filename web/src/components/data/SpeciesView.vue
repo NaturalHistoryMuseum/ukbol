@@ -73,13 +73,13 @@
         </div>
       </div>
     </div>
-    <div class="px-2 overflow-y-auto">
-      <table class="w-full table-auto text-left text-sm">
-        <thead class="sticky top-0 z-10">
+    <div class="px-4 pb-4 overflow-y-auto">
+      <table class="w-full table-auto text-md">
+        <thead class="sticky top-0 z-10 text-left">
           <tr>
             <th
               v-for="header in headers"
-              class="border-b font-medium p-4 text-left bg-slate-400"
+              class="border-b font-medium pl-2 py-4 text-left bg-slate-300"
             >
               {{ header }}
             </th>
@@ -89,9 +89,9 @@
           <tr
             v-for="binGroup in binGroups"
             :key="binGroup.bin"
-            class="text-center bg-slate-200 even:bg-slate-300"
+            class="text-left bg-slate-100 even:bg-slate-200"
           >
-            <td>
+            <td class="py-2 pl-2">
               <a
                 target="_blank"
                 :href="`https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${binGroup.bin}`"
@@ -99,9 +99,9 @@
                 {{ binGroup.bin }}
               </a>
             </td>
-            <td>{{ binGroup.count }}</td>
-            <td>{{ binGroup.ukCount }}</td>
-            <td>{{ Array.from(binGroup.names).join(', ') }}</td>
+            <td class="py-2 pl-2">{{ binGroup.count }}</td>
+            <td class="py-2 pl-2">{{ binGroup.ukCount }}</td>
+            <td class="py-2 pl-2">{{ binGroup.names.length }}</td>
             <!--            <td></td>-->
             <!--            <td></td>-->
             <!--            <td></td>-->
@@ -129,9 +129,9 @@ import { computed } from 'vue';
 
 const headers = [
   'BIN',
-  '# specimens (all)',
-  '# specimens (UK)',
-  'Names in BIN',
+  'Number specimens (all)',
+  'Number specimens (UK)',
+  'Number of names in BIN',
   // 'Maximum distance within BIN',
   // 'Distance to Nearest Neighbour BIN',
   // 'Preferred BIN?',
