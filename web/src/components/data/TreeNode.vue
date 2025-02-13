@@ -11,7 +11,7 @@
         v-if="!!icon"
         :icon="icon"
       ></FontAwesomeIcon>
-      <Spinner :loading="isLoading"></Spinner>
+      <Spinner class="ml-1.5" :loading="isLoading"></Spinner>
     </div>
 
     <template v-if="isExpanded">
