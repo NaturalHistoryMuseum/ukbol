@@ -124,6 +124,7 @@ import {
   getTaxon,
   getTaxonBins,
 } from '../../lib/api.js';
+import { computed } from 'vue';
 
 const headers = [
   'BIN',
@@ -142,7 +143,10 @@ const gbifTaxon = await getGBIFData(taxon.name, taxon.rank);
 const phylopicData = !gbifTaxon ? null : await getPhylopicData(gbifTaxon);
 const binGroups = await getTaxonBins(taxonId);
 const specimenCount = binGroups.reduce((acc, bin) => acc + bin.count, 0);
-const downloadUrl = '/api/download/specimens';
+
+const downloadUrl = computed(() => {
+  return `/api/taxon/${taxonId}/download/bins`;
+});
 </script>
 
 <style scoped></style>
