@@ -1,7 +1,10 @@
+import csv
+import io
+from dataclasses import dataclass
 from functools import wraps
 from itertools import groupby
 
-from flask import Blueprint, request
+from flask import Blueprint, request, make_response, Response
 from sqlalchemy import Select
 from sqlalchemy.orm import aliased
 
@@ -200,19 +203,36 @@ def get_taxon_specimens(taxon: Taxon):
     }
 
 
-@blueprint.get("/taxon/<taxon_id>/bins")
-@validate_taxon_id
-def get_taxon_bins(taxon: Taxon):
+# todo: might as well move this to be a schema
+@dataclass
+class TaxonBin:
+    bin: str
+    count: int
+    uk_count: int
+    names: list[str]
+
+    def to_dict(self, stringify_names: bool = False) -> dict:
+        """
+        Turn this TaxonBin into a dict.
+
+        :param stringify_names: if True, turns the list of names into a str, otherwise,
+                                leaves it as a str (default: False)
+        :return: a dict representation of the TaxonBin
+        """
+        return {
+            "bin": self.bin,
+            "count": self.count,
+            "ukCount": self.uk_count,
+            "names": self.names if not stringify_names else " | ".join(self.names),
+        }
+
+
+def create_taxon_bins(taxon: Taxon) -> list[TaxonBin]:
     """
-    Given a taxon_id as part of the path, matches BOLD specimens with the same taxon
-    name, groups them by their assigned BIN and then returns a list of all bins in
-    descending count order with details about counts etc.
+    Create a list of TaxonBin objects summarising the BINs for the given taxon.
 
-    The BOLD specimens are matched in the local database using a direct lowercase string
-    match currently. All synonyms of the taxon are also used during matching.
-
-    :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
-    :return: a list of JSON objects representing a single BIN
+    :param taxon: the taxon object
+    :return: a list of TaxonBin objects in descending count order
     """
     names = {taxon.name}
     names.update(synonym.name for synonym in taxon.synonyms)
@@ -236,14 +256,49 @@ def get_taxon_bins(taxon: Taxon):
                 uk_count += 1
             names.add(specimen.name)
 
-        # flask doesn't like None keys so turn them into a string if they appear
-        bins.append(
-            {
-                "bin": bin_uri,
-                "count": count,
-                "ukCount": uk_count,
-                "names": sorted(names),
-            }
-        )
+        bins.append(TaxonBin(bin_uri, count, uk_count, sorted(names)))
+
     # return sorted by specimen count
-    return sorted(bins, key=lambda bin_info: bin_info["count"], reverse=True)
+    return sorted(bins, key=lambda taxon_bin: taxon_bin.count, reverse=True)
+
+
+@blueprint.get("/taxon/<taxon_id>/bins")
+@validate_taxon_id
+def get_taxon_bins(taxon: Taxon):
+    """
+    Given a taxon_id as part of the path, matches BOLD specimens with the same taxon
+    name, groups them by their assigned BIN and then returns a list of all bins in
+    descending count order with details about counts etc.
+
+    The BOLD specimens are matched in the local database using a direct lowercase string
+    match currently. All synonyms of the taxon are also used during matching.
+
+    :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
+    :return: a list of JSON objects representing a single BIN
+    """
+    return [taxon_bin.to_dict() for taxon_bin in create_taxon_bins(taxon)]
+
+
+@blueprint.get("/taxon/<taxon_id>/download/bins")
+@validate_taxon_id
+def download_taxon_bins(taxon: Taxon) -> Response:
+    """
+    Download the taxon bin data as a CSV. This is done synchronously because the number
+    of specimens is likely not to be that large but if this becomes a burden it should
+    be changed to something asynchronous (and we'd need to page the get_taxon_bins route
+    as well really).
+
+    :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
+    :return: a CSV file response
+    """
+    data = io.StringIO()
+    writer = csv.DictWriter(data, ["bin", "count", "ukCount", "names"])
+    writer.writeheader()
+    writer.writerows(
+        taxon_bin.to_dict(stringify_names=True)
+        for taxon_bin in create_taxon_bins(taxon)
+    )
+    output = make_response(data.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=specimens.csv"
+    output.headers["Content-type"] = "text/csv"
+    return output
