@@ -11,7 +11,10 @@
       <Suspense v-else>
         <SpeciesView :taxon-id="taxonId" :key="taxonId"></SpeciesView>
         <template #fallback>
-          <Spinner class="content-center" :loading="true"></Spinner>
+          <Spinner
+            class="p-4 text-3xl left-1/2 top-1/3 relative"
+            :loading="true"
+          ></Spinner>
         </template>
       </Suspense>
     </div>
