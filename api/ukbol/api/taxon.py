@@ -65,16 +65,17 @@ def validate_taxon_id(func):
 @blueprint.get("/taxon/roots")
 def get_roots():
     """
-    Returns a list of the root Taxon objects in the taxonomy. There will probably only
-    be one of these, but returning a list future proofs us. The roots of the taxonomy
-    are Taxon objects without a parent and hence should represent the top-level taxa in
-    the taxonomy.
+    Returns a list of the root Taxon objects in the taxonomy that we want to display in
+    the front end, currently this is just the Biota entry but could be more I guess in
+    the future?
 
     :return: a list of Taxon serialised objects
     """
     return taxon_schema.dump(
         db.session.scalars(
-            db.select(Taxon).filter(Taxon.parent_id.is_(None)).order_by(Taxon.name)
+            db.select(Taxon)
+            # we only actually want the biota root so just get that
+            .filter(Taxon.name == "biota")
         ).all(),
         many=True,
     )
