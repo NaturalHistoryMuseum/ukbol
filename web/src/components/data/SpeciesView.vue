@@ -132,7 +132,7 @@ import {
   getTaxonBins,
   buildDownloadUrl,
 } from '../../lib/api.js';
-import { computed } from 'vue';
+import { computed, nextTick } from 'vue';
 
 const headers = [
   'BIN',
@@ -144,6 +144,12 @@ const headers = [
 const { taxonId } = defineProps(['taxonId']);
 
 const taxon = await getTaxon(taxonId);
+
+// update the page title with the taxon name
+await nextTick(() => {
+  document.title = `UKBoL - ${capitalise(taxon.name)}`;
+});
+
 const gbifTaxon = await getGBIFData(taxon.name, taxon.rank);
 const phylopicData = !gbifTaxon ? null : await getPhylopicData(gbifTaxon);
 const binGroups = await getTaxonBins(taxonId);
