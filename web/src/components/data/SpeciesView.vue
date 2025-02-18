@@ -96,7 +96,7 @@
               <td class="py-2 pl-2">
                 <a
                   target="_blank"
-                  :href="`https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${binGroup.bin}`"
+                  :href="`https://doi.org/10.5883/${binGroup.bin}`"
                 >
                   {{ binGroup.bin }}
                 </a>
