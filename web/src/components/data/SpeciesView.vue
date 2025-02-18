@@ -87,26 +87,35 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="binGroup in binGroups"
-            :key="binGroup.bin"
-            class="text-left bg-slate-100 even:bg-slate-200"
-          >
-            <td class="py-2 pl-2">
-              <a
-                target="_blank"
-                :href="`https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${binGroup.bin}`"
-              >
-                {{ binGroup.bin }}
-              </a>
-            </td>
-            <td class="py-2 pl-2">{{ binGroup.count }}</td>
-            <td class="py-2 pl-2">{{ binGroup.ukCount }}</td>
-            <td class="py-2 pl-2">{{ binGroup.names.length }}</td>
-            <!--            <td></td>-->
-            <!--            <td></td>-->
-            <!--            <td></td>-->
-          </tr>
+          <template v-if="binGroups.length > 0">
+            <tr
+              v-for="binGroup in binGroups"
+              :key="binGroup.bin"
+              class="text-left bg-slate-100 even:bg-slate-200"
+            >
+              <td class="py-2 pl-2">
+                <a
+                  target="_blank"
+                  :href="`https://www.boldsystems.org/index.php/Public_BarcodeCluster?clusteruri=${binGroup.bin}`"
+                >
+                  {{ binGroup.bin }}
+                </a>
+              </td>
+              <td class="py-2 pl-2">{{ binGroup.count }}</td>
+              <td class="py-2 pl-2">{{ binGroup.ukCount }}</td>
+              <td class="py-2 pl-2">{{ binGroup.names.length }}</td>
+              <!--            <td></td>-->
+              <!--            <td></td>-->
+              <!--            <td></td>-->
+            </tr>
+          </template>
+          <template v-else>
+            <tr>
+              <td colspan="4" class="text-center pt-6 font-bold">
+                No specimens found
+              </td>
+            </tr>
+          </template>
         </tbody>
       </table>
     </div>
