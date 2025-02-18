@@ -104,9 +104,6 @@
               <td class="py-2 pl-2">{{ binGroup.count }}</td>
               <td class="py-2 pl-2">{{ binGroup.ukCount }}</td>
               <td class="py-2 pl-2">{{ binGroup.names.length }}</td>
-              <!--            <td></td>-->
-              <!--            <td></td>-->
-              <!--            <td></td>-->
             </tr>
           </template>
           <template v-else>
@@ -142,9 +139,6 @@ const headers = [
   'Number specimens (all)',
   'Number specimens (UK)',
   'Number of names in BIN',
-  // 'Maximum distance within BIN',
-  // 'Distance to Nearest Neighbour BIN',
-  // 'Preferred BIN?',
 ];
 
 const { taxonId } = defineProps(['taxonId']);
