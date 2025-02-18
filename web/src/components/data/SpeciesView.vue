@@ -108,7 +108,7 @@
           </template>
           <template v-else>
             <tr>
-              <td colspan="4" class="text-center pt-6 font-bold">
+              <td :colspan="headers.length" class="text-center pt-6 font-bold">
                 No specimens found
               </td>
             </tr>
