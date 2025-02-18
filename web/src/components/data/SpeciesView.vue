@@ -64,6 +64,7 @@
         </div>
         <div class="my-2">
           <a
+            v-if="binGroups.length > 0"
             class="border-2 text-white p-2 border-black bg-slate-500 rounded-md hover:text-slate-100"
             :href="downloadUrl"
           >
