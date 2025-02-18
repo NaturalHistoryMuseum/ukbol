@@ -8,15 +8,7 @@
       >
         Select a name from the tree to the left to get started
       </div>
-      <Suspense v-else>
-        <SpeciesView :taxon-id="taxonId" :key="taxonId"></SpeciesView>
-        <template #fallback>
-          <Spinner
-            class="p-4 text-3xl left-1/2 top-1/3 relative"
-            :loading="true"
-          ></Spinner>
-        </template>
-      </Suspense>
+      <SpeciesView v-else :taxon-id="taxonId" :key="taxonId"></SpeciesView>
     </div>
   </div>
 </template>
@@ -26,7 +18,6 @@ import Sidebar from '../data/Sidebar.vue';
 import SpeciesView from '../data/SpeciesView.vue';
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import Spinner from '../Spinner.vue';
 
 const route = useRoute();
 
