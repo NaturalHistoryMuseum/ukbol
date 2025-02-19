@@ -117,7 +117,7 @@
                   </a>
                 </td>
                 <td class="py-2 pl-2">{{ binGroup.count }}</td>
-                <td class="py-2 pl-2">{{ binGroup.ukCount }}</td>
+                <td class="py-2 pl-2">{{ binGroup.uk_count }}</td>
                 <td class="py-2 pl-2">
                   {{ getNonSpeciesNames(binGroup.names) }}
                 </td>
