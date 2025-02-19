@@ -119,7 +119,10 @@
                 <td class="py-2 pl-2">{{ binGroup.count }}</td>
                 <td class="py-2 pl-2">{{ binGroup.uk_count }}</td>
                 <td class="py-2 pl-2">
-                  {{ getNonSpeciesNames(binGroup.names) }}
+                  <p v-for="[name, count] in binGroup.names">
+                    <span class="italic">{{ capitalise(name) }}</span>
+                    <span> ({{ count }})</span>
+                  </p>
                 </td>
               </tr>
             </template>
@@ -160,7 +163,7 @@ const headers = [
   'BIN',
   'Number specimens (all)',
   'Number specimens (UK)',
-  'Different names in BIN',
+  'Names in BIN',
 ];
 const props = defineProps(['taxonId']);
 const status = ref('Loading...');
@@ -193,11 +196,6 @@ watchEffect(async () => {
 const downloadUrl = computed(() => {
   return buildDownloadUrl(props.taxonId);
 });
-
-function getNonSpeciesNames(names) {
-  const diffNames = names.filter((name) => name !== taxon.value.name);
-  return diffNames.length > 0 ? diffNames.join(', ') : 'none';
-}
 </script>
 
 <style scoped></style>

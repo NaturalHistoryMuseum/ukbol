@@ -64,4 +64,4 @@ class TaxonBinSchema(ma.Schema):
     bin = fields.Str()
     count = fields.Integer()
     uk_count = fields.Integer()
-    names = fields.List(fields.Str())
+    names = fields.List(fields.Tuple((fields.Str(), fields.Integer())))

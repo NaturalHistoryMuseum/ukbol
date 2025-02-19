@@ -1,5 +1,6 @@
 import csv
 import io
+from collections import Counter
 from dataclasses import dataclass
 from functools import wraps
 from itertools import groupby
@@ -216,7 +217,7 @@ class TaxonBin:
     bin: str
     count: int
     uk_count: int
-    names: list[str]
+    names: list[tuple[str, int]]
 
 
 @blueprint.get("/taxon/<taxon_id>/bins")
@@ -239,14 +240,14 @@ def get_taxon_bins(taxon: Taxon):
     ):
         count = 0
         uk_count = 0
-        names = set()
+        names = Counter()
         for specimen in specimens:
             count += 1
             if specimen.country == "united kingdom":
                 uk_count += 1
-            names.add(specimen.name)
+            names[specimen.name] += 1
 
-        bins.append(TaxonBin(bin_uri, count, uk_count, sorted(names)))
+        bins.append(TaxonBin(bin_uri, count, uk_count, names.most_common()))
 
     # return sorted by specimen count
     return taxon_bin_schema.dump(
