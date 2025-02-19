@@ -73,5 +73,5 @@ export async function getPhylopicData(gbifTaxon) {
 }
 
 export function buildDownloadUrl(taxonId) {
-  return `/api/taxon/${taxonId}/download/bins`;
+  return `/api/taxon/${taxonId}/download/specimens`;
 }

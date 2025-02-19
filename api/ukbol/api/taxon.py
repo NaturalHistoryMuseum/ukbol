@@ -10,6 +10,7 @@ from sqlalchemy.orm import aliased
 
 from ukbol.extensions import db
 from ukbol.model import Taxon, Specimen
+from ukbol.query import iter_specimens_in_associated_bins
 from ukbol.schema import TaxonSchema, SpecimenSchema, TaxonSuggestionSchema
 from ukbol.utils import clamp
 
@@ -228,41 +229,6 @@ class TaxonBin:
         }
 
 
-def create_taxon_bins(taxon: Taxon) -> list[TaxonBin]:
-    """
-    Create a list of TaxonBin objects summarising the BINs for the given taxon.
-
-    :param taxon: the taxon object
-    :return: a list of TaxonBin objects in descending count order
-    """
-    names = {taxon.name}
-    names.update(synonym.name for synonym in taxon.synonyms)
-    # order the results by the bin so that we can use groupby
-    select = (
-        db.select(Specimen)
-        .filter(Specimen.name.in_(names))
-        .filter(Specimen.bin_uri.isnot(None))
-        .order_by(Specimen.bin_uri)
-    )
-    result = db.session.scalars(select)
-
-    bins = []
-    for bin_uri, specimens in groupby(result.all(), lambda s: s.bin_uri):
-        count = 0
-        uk_count = 0
-        names = set()
-        for specimen in specimens:
-            count += 1
-            if specimen.country == "united kingdom":
-                uk_count += 1
-            names.add(specimen.name)
-
-        bins.append(TaxonBin(bin_uri, count, uk_count, sorted(names)))
-
-    # return sorted by specimen count
-    return sorted(bins, key=lambda taxon_bin: taxon_bin.count, reverse=True)
-
-
 @blueprint.get("/taxon/<taxon_id>/bins")
 @validate_taxon_id
 def get_taxon_bins(taxon: Taxon):
@@ -277,12 +243,33 @@ def get_taxon_bins(taxon: Taxon):
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
     :return: a list of JSON objects representing a single BIN
     """
-    return [taxon_bin.to_dict() for taxon_bin in create_taxon_bins(taxon)]
+    bins = []
+    for bin_uri, specimens in groupby(
+        iter_specimens_in_associated_bins(taxon), lambda s: s.bin_uri
+    ):
+        count = 0
+        uk_count = 0
+        names = set()
+        for specimen in specimens:
+            count += 1
+            if specimen.country == "united kingdom":
+                uk_count += 1
+            names.add(specimen.name)
+
+        bins.append(TaxonBin(bin_uri, count, uk_count, sorted(names)))
+
+    # return sorted by specimen count
+    return [
+        taxon_bin.to_dict()
+        for taxon_bin in sorted(
+            bins, key=lambda taxon_bin: taxon_bin.count, reverse=True
+        )
+    ]
 
 
-@blueprint.get("/taxon/<taxon_id>/download/bins")
+@blueprint.get("/taxon/<taxon_id>/download/specimens")
 @validate_taxon_id
-def download_taxon_bins(taxon: Taxon) -> Response:
+def download_specimens(taxon: Taxon) -> Response:
     """
     Download the taxon bin data as a CSV. This is done synchronously because the number
     of specimens is likely not to be that large but if this becomes a burden it should
@@ -293,11 +280,11 @@ def download_taxon_bins(taxon: Taxon) -> Response:
     :return: a CSV file response
     """
     data = io.StringIO()
-    writer = csv.DictWriter(data, ["bin", "count", "ukCount", "names"])
+    headers = [column.name for column in Specimen.__table__.columns]
+    writer = csv.DictWriter(data, headers)
     writer.writeheader()
     writer.writerows(
-        taxon_bin.to_dict(stringify_names=True)
-        for taxon_bin in create_taxon_bins(taxon)
+        specimen_schema.dump(iter_specimens_in_associated_bins(taxon), many=True)
     )
     output = make_response(data.getvalue())
     output.headers["Content-Disposition"] = "attachment; filename=specimens.csv"
