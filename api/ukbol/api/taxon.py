@@ -11,7 +11,12 @@ from sqlalchemy.orm import aliased
 from ukbol.extensions import db
 from ukbol.model import Taxon, Specimen
 from ukbol.query import iter_specimens_in_associated_bins
-from ukbol.schema import TaxonSchema, SpecimenSchema, TaxonSuggestionSchema
+from ukbol.schema import (
+    TaxonSchema,
+    SpecimenSchema,
+    TaxonSuggestionSchema,
+    TaxonBinSchema,
+)
 from ukbol.utils import clamp
 
 blueprint = Blueprint("taxon_api", __name__)
@@ -20,6 +25,7 @@ blueprint = Blueprint("taxon_api", __name__)
 taxon_schema = TaxonSchema()
 specimen_schema = SpecimenSchema()
 suggestion_schema = TaxonSuggestionSchema()
+taxon_bin_schema = TaxonBinSchema()
 
 
 def add_ignore_ranks_filter(select: Select) -> Select:
@@ -205,28 +211,12 @@ def get_taxon_specimens(taxon: Taxon):
     }
 
 
-# todo: might as well move this to be a schema
 @dataclass
 class TaxonBin:
     bin: str
     count: int
     uk_count: int
     names: list[str]
-
-    def to_dict(self, stringify_names: bool = False) -> dict:
-        """
-        Turn this TaxonBin into a dict.
-
-        :param stringify_names: if True, turns the list of names into a str, otherwise,
-                                leaves it as a str (default: False)
-        :return: a dict representation of the TaxonBin
-        """
-        return {
-            "bin": self.bin,
-            "count": self.count,
-            "ukCount": self.uk_count,
-            "names": self.names if not stringify_names else " | ".join(self.names),
-        }
 
 
 @blueprint.get("/taxon/<taxon_id>/bins")
@@ -259,12 +249,9 @@ def get_taxon_bins(taxon: Taxon):
         bins.append(TaxonBin(bin_uri, count, uk_count, sorted(names)))
 
     # return sorted by specimen count
-    return [
-        taxon_bin.to_dict()
-        for taxon_bin in sorted(
-            bins, key=lambda taxon_bin: taxon_bin.count, reverse=True
-        )
-    ]
+    return taxon_bin_schema.dump(
+        sorted(bins, key=lambda taxon_bin: taxon_bin.count, reverse=True), many=True
+    )
 
 
 @blueprint.get("/taxon/<taxon_id>/download/specimens")

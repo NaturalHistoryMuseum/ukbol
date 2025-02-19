@@ -58,3 +58,10 @@ class SpecimenSchema(ma.SQLAlchemyAutoSchema):
     genus = ma.auto_field()
     species = ma.auto_field()
     subspecies = ma.auto_field()
+
+
+class TaxonBinSchema(ma.Schema):
+    bin = fields.Str()
+    count = fields.Integer()
+    uk_count = fields.Integer()
+    names = fields.List(fields.Str())
