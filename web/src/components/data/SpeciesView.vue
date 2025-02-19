@@ -113,7 +113,9 @@
                 </td>
                 <td class="py-2 pl-2">{{ binGroup.count }}</td>
                 <td class="py-2 pl-2">{{ binGroup.ukCount }}</td>
-                <td class="py-2 pl-2">{{ binGroup.names.length }}</td>
+                <td class="py-2 pl-2">
+                  {{ getNonSpeciesNames(binGroup.names) }}
+                </td>
               </tr>
             </template>
             <template v-else>
@@ -153,7 +155,7 @@ const headers = [
   'BIN',
   'Number specimens (all)',
   'Number specimens (UK)',
-  'Number of names in BIN',
+  'Different names in BIN',
 ];
 const props = defineProps(['taxonId']);
 const status = ref('Loading...');
@@ -186,6 +188,11 @@ watchEffect(async () => {
 const downloadUrl = computed(() => {
   return buildDownloadUrl(props.taxonId);
 });
+
+function getNonSpeciesNames(names) {
+  const diffNames = names.filter((name) => name !== taxon.value.name);
+  return diffNames.length > 0 ? diffNames.join(', ') : 'none';
+}
 </script>
 
 <style scoped></style>
