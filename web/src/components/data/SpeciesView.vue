@@ -16,7 +16,12 @@
             </Name>
           </div>
           <div class="flex gap-2 items-center pt-2 pb-2">
-            <Badge label="UKSI TVK" :value="taxon.id" colour="cyan"></Badge>
+            <a
+              :href="`https://species.nbnatlas.org/species/${taxon.id}`"
+              target="_blank"
+            >
+              <Badge label="UKSI TVK" :value="taxon.id" colour="cyan"></Badge>
+            </a>
             <Badge
               label="Rank"
               :value="capitalise(taxon.rank)"
