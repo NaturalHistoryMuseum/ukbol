@@ -83,7 +83,7 @@ def iter_specimens(rows: Iterable[dict[str, str]]) -> Iterable[Specimen]:
         Specimen(
             specimen_id=get(row, "specimenid", filter_str_nones=True),
             bin_uri=get(row, "bin_uri", filter_str_nones=True),
-            country=get(row, "country", lowercase=True, filter_str_nones=True),
+            country=get(row, "country_iso", lowercase=True, filter_str_nones=True),
             **extract_taxonomy(row),
         )
         for row in rows
