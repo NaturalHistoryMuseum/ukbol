@@ -18,7 +18,10 @@ bad_bold_tar_gz = Path(__file__).parent.parent / "files" / "bad.tar.gz"
 class TestGetTSVName:
     def test_ok(self):
         with tarfile.open(bold_tar_gz) as tar:
-            assert get_tsv_name(tar) == "BOLD_Public.24-JAN-2025.tsv"
+            assert (
+                get_tsv_name(tar)
+                == "BOLD_Public.24-JAN-2025/BOLD_Public.24-Jan-2025.tsv"
+            )
 
     def test_fail(self):
         with tarfile.open(bad_bold_tar_gz) as tar:
@@ -123,7 +126,7 @@ class TestRebuildBoldTables:
         # 9513374 is a value in the sample
         assert Specimen.query.filter(Specimen.specimen_id == "1575613").count() == 1
         # there are 168 mexico country values in the sample
-        assert Specimen.query.filter(Specimen.country == "MX").count() == 168
+        assert Specimen.query.filter(Specimen.country == "mx").count() == 168
 
     def test_with_old_data(self, app_no_data):
         # add a load of data
