@@ -6,7 +6,7 @@
         v-if="!taxonId"
         class="p-4 h-full text-lg text-center content-center"
       >
-        Select a name from the tree to the left to get started
+        Search or select a name from the tree to the left to get started
       </div>
       <SpeciesView v-else :taxon-id="taxonId" :key="taxonId"></SpeciesView>
     </div>
