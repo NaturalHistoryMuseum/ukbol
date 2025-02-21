@@ -15,9 +15,8 @@ from ukbol.utils import log
 def get_tsv_name(tar: tarfile.TarFile) -> str:
     """
     Given a path to a tar.gz archive, return the name of the first TSV file inside it
-    that we encounter. The BOLD tar.gz snapshots only have a single .json and a single.
-
-    .tsv file within them currently so this should be able to find the TSV file we need
+    that we encounter. The BOLD tar.gz snapshots only have a single JSON and a single
+    TSV file within them currently so this should be able to find the TSV file we need
     to read without knowing what it is called.
 
     If no TSV file can be found, an Exception is raised.
@@ -83,7 +82,7 @@ def iter_specimens(rows: Iterable[dict[str, str]]) -> Iterable[Specimen]:
         Specimen(
             specimen_id=get(row, "specimenid", filter_str_nones=True),
             bin_uri=get(row, "bin_uri", filter_str_nones=True),
-            country=get(row, "country", lowercase=True, filter_str_nones=True),
+            country=get(row, "country_iso", lowercase=True, filter_str_nones=True),
             **extract_taxonomy(row),
         )
         for row in rows

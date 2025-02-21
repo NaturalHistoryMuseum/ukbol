@@ -243,7 +243,7 @@ def get_taxon_bins(taxon: Taxon):
         names = Counter()
         for specimen in specimens:
             count += 1
-            if specimen.country == "united kingdom":
+            if specimen.country == "gb":
                 uk_count += 1
             names[specimen.name] += 1
 
