@@ -34,7 +34,7 @@ def app(app_no_data) -> Flask:
         rebuild_uksi_tables()
 
     # load some bold data
-    bold_tar_gz = Path(__file__).parent / "files" / "BOLD_Public.24-Jan-2025.tar.gz"
+    bold_tar_gz = Path(__file__).parent / "files" / "BOLD_Public.24-JAN-2025.tar.gz"
     rebuild_bold_tables(bold_tar_gz)
 
     yield app_no_data
