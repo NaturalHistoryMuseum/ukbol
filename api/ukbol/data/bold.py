@@ -15,9 +15,8 @@ from ukbol.utils import log
 def get_tsv_name(tar: tarfile.TarFile) -> str:
     """
     Given a path to a tar.gz archive, return the name of the first TSV file inside it
-    that we encounter. The BOLD tar.gz snapshots only have a single .json and a single.
-
-    .tsv file within them currently so this should be able to find the TSV file we need
+    that we encounter. The BOLD tar.gz snapshots only have a single JSON and a single
+    TSV file within them currently so this should be able to find the TSV file we need
     to read without knowing what it is called.
 
     If no TSV file can be found, an Exception is raised.
