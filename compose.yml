@@ -5,6 +5,7 @@ services:
     build:
       context: ./docker/db
       dockerfile: Dockerfile
+    command: "-c max_wal_size=2GB"
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password

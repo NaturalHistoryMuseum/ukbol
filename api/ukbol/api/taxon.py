@@ -201,8 +201,8 @@ def get_taxon_specimens(taxon: Taxon):
     names.update(synonym.name for synonym in taxon.synonyms)
     select = (
         db.select(Specimen)
-        .filter(Specimen.name.in_(names))
-        .order_by(Specimen.name, Specimen.id)
+        .filter(Specimen.identification.in_(names))
+        .order_by(Specimen.identification, Specimen.id)
     )
 
     page = db.paginate(select)
@@ -243,9 +243,9 @@ def get_taxon_bins(taxon: Taxon):
         names = Counter()
         for specimen in specimens:
             count += 1
-            if specimen.country == "gb":
+            if specimen.country_iso == "GB":
                 uk_count += 1
-            names[specimen.name] += 1
+            names[specimen.identification] += 1
 
         bins.append(TaxonBin(bin_uri, count, uk_count, names.most_common()))
 
