@@ -82,25 +82,25 @@ def create_specimens(
 
     for i in range(matches):
         matching_specimens.append(
-            Specimen(specimen_id=f"m-specimen-{i}", name=taxon.name)
+            Specimen(specimenid=f"m-specimen-{i}", identification=taxon.name)
         )
 
     for i, synonym in zip(range(synonym_matches), cycle(taxon.synonyms)):
         matching_specimens.append(
-            Specimen(specimen_id=f"s-specimen-{i}", name=synonym.name)
+            Specimen(specimenid=f"s-specimen-{i}", identification=synonym.name)
         )
 
     for i in range(no_matches):
         not_matching_specimens.append(
-            Specimen(specimen_id=f"n-specimen-{i}", name="beans")
+            Specimen(specimenid=f"n-specimen-{i}", identification="beans")
         )
 
     db.session.add_all(matching_specimens)
     db.session.add_all(not_matching_specimens)
     db.session.commit()
 
-    # sort by name and id just like the API does
-    matching_specimens.sort(key=lambda syn: (syn.name, syn.id))
+    # sort by identification and id just like the API does
+    matching_specimens.sort(key=lambda syn: (syn.identification, syn.id))
 
     return matching_specimens, not_matching_specimens
 

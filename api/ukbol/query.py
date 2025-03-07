@@ -25,7 +25,7 @@ def iter_specimens_in_associated_bins(taxon: Taxon) -> Iterator[Specimen]:
         db.session.scalars(
             db.select(Specimen.bin_uri)
             .distinct()
-            .filter(Specimen.name.in_(names))
+            .filter(Specimen.identification.in_(names))
             .filter(Specimen.bin_uri.isnot(None))
         )
     )
