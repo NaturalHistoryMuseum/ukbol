@@ -169,6 +169,18 @@ wheels = [
 ]
 
 [[package]]
+name = "cz-nhm"
+version = "0.7.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "commitizen" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/33/3d/4df657ee7e59fa47d48ccb029bdcea56eabc742ecfef05f37df4d044c646/cz_nhm-0.7.0.tar.gz", hash = "sha256:08a5795909301de10b3ab3c5d73d9a0b3918890807bd0d00d8d296c4e466c468", size = 4594 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/99/44/3c4c45b12cd537dfe5189af060e0bcd656e7e5b573a61e515be83d78ae66/cz_nhm-0.7.0-py3-none-any.whl", hash = "sha256:00b13c19c3765bd28f113f0de1d5e32e9359c6816e613fefa770145c110f0ae4", size = 4824 },
+]
+
+[[package]]
 name = "decli"
 version = "0.6.2"
 source = { registry = "https://pypi.org/simple" }
@@ -714,6 +726,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "commitizen" },
+    { name = "cz-nhm" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -737,6 +750,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "commitizen" },
+    { name = "cz-nhm" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },

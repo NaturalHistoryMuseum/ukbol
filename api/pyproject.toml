@@ -33,6 +33,7 @@ dependencies = [
 dev = [
     "pre-commit",
     "commitizen",
+    "cz_nhm",
     "ruff",
     "pytest",
     "pytest-cov",
