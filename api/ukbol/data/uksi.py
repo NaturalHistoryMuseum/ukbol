@@ -6,7 +6,7 @@ import requests
 
 from ukbol.data.utils import get
 from ukbol.extensions import db
-from ukbol.model import Taxon, Synonym
+from ukbol.model import Synonym, Taxon
 from ukbol.utils import log
 
 USER_AGENT = "UKBoL taxonomy updater"

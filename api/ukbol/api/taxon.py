@@ -5,18 +5,18 @@ from dataclasses import dataclass
 from functools import wraps
 from itertools import groupby
 
-from flask import Blueprint, request, make_response, Response
+from flask import Blueprint, Response, make_response, request
 from sqlalchemy import Select
 from sqlalchemy.orm import aliased
 
 from ukbol.extensions import db
-from ukbol.model import Taxon, Specimen
+from ukbol.model import Specimen, Taxon
 from ukbol.query import iter_specimens_in_associated_bins
 from ukbol.schema import (
-    TaxonSchema,
     SpecimenSchema,
-    TaxonSuggestionSchema,
     TaxonBinSchema,
+    TaxonSchema,
+    TaxonSuggestionSchema,
 )
 from ukbol.utils import clamp
 

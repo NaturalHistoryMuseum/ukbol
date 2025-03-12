@@ -29,8 +29,12 @@ dependencies = [
     "requests==2.32.3",
 ]
 
-[project.optional-dependencies]
-test = [
+[dependency-groups]
+dev = [
+    "pre-commit",
+    "commitizen",
+    "cz_nhm",
+    "ruff",
     "pytest",
     "pytest-cov",
 ]
@@ -43,26 +47,24 @@ changelog = "https://github.com/NaturalHistoryMuseum/ukbol/blob/main/CHANGELOG.m
 ukbol = "ukbol.cli:cli"
 
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool]
-[tool.setuptools]
-zip-safe = false
+[tool.hatch.build.targets.wheel]
+packages = ["ukbol"]
 
-[tool.setuptools.packages.find]
-exclude = ["tests", "docs"]
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
 
-[tool.black]
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.ruff]
 line-length = 88
-skip_string_normalization = true
 
-[tool.pylint]
-max-line-length = 88
-disable = ["C0114", "R0903"]
-
-[tool.docformatter]
-wrap-summaries = 88
-wrap-descriptions = 88
-pre-summary-newline = true
-make-summary-multi-line = true
+[tool.ruff.format]
+docstring-code-format = true

@@ -16,6 +16,10 @@ services:
         ipv4_address: 10.0.15.20
     volumes:
       - db_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: pg_isready -U admin -d ukbol
+      interval: 1s
+      retries: 10
 
 networks:
   ukbol_net:
