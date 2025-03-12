@@ -3,8 +3,8 @@ from itertools import cycle
 from flask.testing import FlaskClient
 
 from ukbol.extensions import db
-from ukbol.model import Taxon, Specimen
-from ukbol.schema import TaxonSchema, SpecimenSchema
+from ukbol.model import Specimen, Taxon
+from ukbol.schema import SpecimenSchema, TaxonSchema
 
 taxon_schema = TaxonSchema()
 specimen_schema = SpecimenSchema()

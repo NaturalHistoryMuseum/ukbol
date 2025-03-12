@@ -1,7 +1,7 @@
 from typing import Iterator
 
 from ukbol.extensions import db
-from ukbol.model import Taxon, Specimen
+from ukbol.model import Specimen, Taxon
 
 
 def iter_specimens_in_associated_bins(taxon: Taxon) -> Iterator[Specimen]:

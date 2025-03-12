@@ -1,7 +1,7 @@
 from marshmallow import fields
 
 from ukbol.extensions import ma
-from ukbol.model import Taxon, Synonym, Specimen
+from ukbol.model import Specimen, Synonym, Taxon
 
 
 class SynonymSchema(ma.SQLAlchemyAutoSchema):

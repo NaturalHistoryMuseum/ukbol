@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from ukbol.data.uksi import rebuild_uksi_tables
-from ukbol.model import Taxon, Synonym
+from ukbol.model import Synonym, Taxon
 
 nbn_mock_data = Path(__file__).parent.parent / "files" / "mock_nbn_records.json"
 
