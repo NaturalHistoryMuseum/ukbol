@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from ukbol.model import Specimen, Synonym, Taxon
+from ukbol.model import PantheonSpecies, Specimen, Synonym, Taxon
 
 blueprint = Blueprint("status", __name__)
 
@@ -21,5 +21,6 @@ def status() -> dict:
             "specimen": Specimen.query.count(),
             "taxon": Taxon.query.count(),
             "synonym": Synonym.query.count(),
+            "pantheon": PantheonSpecies.query.count(),
         },
     }
