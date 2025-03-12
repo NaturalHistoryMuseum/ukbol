@@ -9,8 +9,8 @@ from ukbol.extensions import db
 # imported from uksi
 class Taxon(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column()
-    authorship: Mapped[str | None] = mapped_column()
+    name: Mapped[str]
+    authorship: Mapped[str | None]
     rank: Mapped[str] = mapped_column(index=True)
     parent_id: Mapped[int | None] = mapped_column(ForeignKey("taxon.id"), index=True)
 
@@ -27,9 +27,9 @@ class Taxon(db.Model):
 # imported from uksi
 class Synonym(db.Model):
     id: Mapped[str] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column()
-    authorship: Mapped[str | None] = mapped_column()
-    rank: Mapped[str] = mapped_column()
+    name: Mapped[str]
+    authorship: Mapped[str | None]
+    rank: Mapped[str]
     taxon_id: Mapped[str] = mapped_column(ForeignKey(Taxon.id), index=True)
 
     # relationships
@@ -43,82 +43,82 @@ class Synonym(db.Model):
 # imported from BOLD
 class Specimen(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    processid: Mapped[str | None] = mapped_column()
-    sampleid: Mapped[str | None] = mapped_column()
-    fieldid: Mapped[str | None] = mapped_column()
-    museumid: Mapped[str | None] = mapped_column()
-    record_id: Mapped[str | None] = mapped_column()
-    specimenid: Mapped[str | None] = mapped_column()
-    processid_minted_date: Mapped[str | None] = mapped_column()
+    processid: Mapped[str | None]
+    sampleid: Mapped[str | None]
+    fieldid: Mapped[str | None]
+    museumid: Mapped[str | None]
+    record_id: Mapped[str | None]
+    specimenid: Mapped[str | None]
+    processid_minted_date: Mapped[str | None]
     bin_uri: Mapped[str | None] = mapped_column(index=True)
-    bin_created_date: Mapped[str | None] = mapped_column()
-    collection_code: Mapped[str | None] = mapped_column()
-    inst: Mapped[str | None] = mapped_column()
-    taxid: Mapped[str | None] = mapped_column()
-    kingdom: Mapped[str | None] = mapped_column()
-    phylum: Mapped[str | None] = mapped_column()
-    cls: Mapped[str | None] = mapped_column()
-    order: Mapped[str | None] = mapped_column()
-    family: Mapped[str | None] = mapped_column()
-    subfamily: Mapped[str | None] = mapped_column()
-    tribe: Mapped[str | None] = mapped_column()
-    genus: Mapped[str | None] = mapped_column()
-    species: Mapped[str | None] = mapped_column()
-    subspecies: Mapped[str | None] = mapped_column()
-    species_reference: Mapped[str | None] = mapped_column()
+    bin_created_date: Mapped[str | None]
+    collection_code: Mapped[str | None]
+    inst: Mapped[str | None]
+    taxid: Mapped[str | None]
+    kingdom: Mapped[str | None]
+    phylum: Mapped[str | None]
+    cls: Mapped[str | None]
+    order: Mapped[str | None]
+    family: Mapped[str | None]
+    subfamily: Mapped[str | None]
+    tribe: Mapped[str | None]
+    genus: Mapped[str | None]
+    species: Mapped[str | None]
+    subspecies: Mapped[str | None]
+    species_reference: Mapped[str | None]
     identification: Mapped[str | None] = mapped_column(index=True)
-    identification_method: Mapped[str | None] = mapped_column()
+    identification_method: Mapped[str | None]
     identification_rank: Mapped[str | None] = mapped_column(index=True)
-    identified_by: Mapped[str | None] = mapped_column()
-    identifier_email: Mapped[str | None] = mapped_column()
-    taxonomy_notes: Mapped[str | None] = mapped_column()
-    sex: Mapped[str | None] = mapped_column()
-    reproduction: Mapped[str | None] = mapped_column()
-    life_stage: Mapped[str | None] = mapped_column()
-    short_note: Mapped[str | None] = mapped_column()
-    notes: Mapped[str | None] = mapped_column()
-    voucher_type: Mapped[str | None] = mapped_column()
-    tissue_type: Mapped[str | None] = mapped_column()
-    specimen_linkout: Mapped[str | None] = mapped_column()
-    associated_specimens: Mapped[str | None] = mapped_column()
-    associated_taxa: Mapped[str | None] = mapped_column()
-    collectors: Mapped[str | None] = mapped_column()
-    collection_date_start: Mapped[str | None] = mapped_column()
-    collection_date_end: Mapped[str | None] = mapped_column()
-    collection_event_id: Mapped[str | None] = mapped_column()
-    collection_time: Mapped[str | None] = mapped_column()
-    collection_notes: Mapped[str | None] = mapped_column()
-    geoid: Mapped[str | None] = mapped_column()
-    country_ocean: Mapped[str | None] = mapped_column()
+    identified_by: Mapped[str | None]
+    identifier_email: Mapped[str | None]
+    taxonomy_notes: Mapped[str | None]
+    sex: Mapped[str | None]
+    reproduction: Mapped[str | None]
+    life_stage: Mapped[str | None]
+    short_note: Mapped[str | None]
+    notes: Mapped[str | None]
+    voucher_type: Mapped[str | None]
+    tissue_type: Mapped[str | None]
+    specimen_linkout: Mapped[str | None]
+    associated_specimens: Mapped[str | None]
+    associated_taxa: Mapped[str | None]
+    collectors: Mapped[str | None]
+    collection_date_start: Mapped[str | None]
+    collection_date_end: Mapped[str | None]
+    collection_event_id: Mapped[str | None]
+    collection_time: Mapped[str | None]
+    collection_notes: Mapped[str | None]
+    geoid: Mapped[str | None]
+    country_ocean: Mapped[str | None]
     country_iso: Mapped[str | None] = mapped_column(index=True)
-    province_state: Mapped[str | None] = mapped_column()
-    region: Mapped[str | None] = mapped_column()
-    sector: Mapped[str | None] = mapped_column()
-    site: Mapped[str | None] = mapped_column()
-    site_code: Mapped[str | None] = mapped_column()
-    coord: Mapped[str | None] = mapped_column()
-    coord_accuracy: Mapped[str | None] = mapped_column()
-    coord_source: Mapped[str | None] = mapped_column()
-    elev: Mapped[str | None] = mapped_column()
-    elev_accuracy: Mapped[str | None] = mapped_column()
-    depth: Mapped[str | None] = mapped_column()
-    depth_accuracy: Mapped[str | None] = mapped_column()
-    habitat: Mapped[str | None] = mapped_column()
-    sampling_protocol: Mapped[str | None] = mapped_column()
-    nuc: Mapped[str | None] = mapped_column()
-    nuc_basecount: Mapped[str | None] = mapped_column()
-    insdc_acs: Mapped[str | None] = mapped_column()
-    funding_src: Mapped[str | None] = mapped_column()
-    marker_code: Mapped[str | None] = mapped_column()
-    primers_forward: Mapped[str | None] = mapped_column()
-    primers_reverse: Mapped[str | None] = mapped_column()
-    sequence_run_site: Mapped[str | None] = mapped_column()
-    sequence_upload_date: Mapped[str | None] = mapped_column()
-    bold_recordset_code_arr: Mapped[str | None] = mapped_column()
-    ecoregion: Mapped[str | None] = mapped_column()
-    biome: Mapped[str | None] = mapped_column()
-    realm: Mapped[str | None] = mapped_column()
-    sovereign_inst: Mapped[str | None] = mapped_column()
+    province_state: Mapped[str | None]
+    region: Mapped[str | None]
+    sector: Mapped[str | None]
+    site: Mapped[str | None]
+    site_code: Mapped[str | None]
+    coord: Mapped[str | None]
+    coord_accuracy: Mapped[str | None]
+    coord_source: Mapped[str | None]
+    elev: Mapped[str | None]
+    elev_accuracy: Mapped[str | None]
+    depth: Mapped[str | None]
+    depth_accuracy: Mapped[str | None]
+    habitat: Mapped[str | None]
+    sampling_protocol: Mapped[str | None]
+    nuc: Mapped[str | None]
+    nuc_basecount: Mapped[str | None]
+    insdc_acs: Mapped[str | None]
+    funding_src: Mapped[str | None]
+    marker_code: Mapped[str | None]
+    primers_forward: Mapped[str | None]
+    primers_reverse: Mapped[str | None]
+    sequence_run_site: Mapped[str | None]
+    sequence_upload_date: Mapped[str | None]
+    bold_recordset_code_arr: Mapped[str | None]
+    ecoregion: Mapped[str | None]
+    biome: Mapped[str | None]
+    realm: Mapped[str | None]
+    sovereign_inst: Mapped[str | None]
 
     @classmethod
     def get(cls, ident: Any) -> Self | None:
@@ -129,17 +129,17 @@ class Specimen(db.Model):
 class PantheonSpecies(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     species: Mapped[str | None] = mapped_column(index=True)
-    family: Mapped[str | None] = mapped_column()
-    order: Mapped[str | None] = mapped_column()
-    sqs: Mapped[str | None] = mapped_column()
-    conservation_status: Mapped[str | None] = mapped_column()
-    larval_feeding_guild: Mapped[str | None] = mapped_column()
-    adult_feeding_guild: Mapped[str | None] = mapped_column()
-    broad_biotope: Mapped[str | None] = mapped_column()
-    habitat: Mapped[str | None] = mapped_column()
-    resources: Mapped[str | None] = mapped_column()
+    family: Mapped[str | None]
+    order: Mapped[str | None]
+    sqs: Mapped[str | None]
+    conservation_status: Mapped[str | None]
+    larval_feeding_guild: Mapped[str | None]
+    adult_feeding_guild: Mapped[str | None]
+    broad_biotope: Mapped[str | None]
+    habitat: Mapped[str | None]
+    resources: Mapped[str | None]
     specific_assemblage_type: Mapped[str | None] = mapped_column(index=True)
-    habitat_score: Mapped[str | None] = mapped_column()
-    associations: Mapped[str | None] = mapped_column()
-    common_name: Mapped[str | None] = mapped_column()
-    notes: Mapped[str | None] = mapped_column()
+    habitat_score: Mapped[str | None]
+    associations: Mapped[str | None]
+    common_name: Mapped[str | None]
+    notes: Mapped[str | None]
