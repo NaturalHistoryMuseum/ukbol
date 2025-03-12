@@ -123,3 +123,23 @@ class Specimen(db.Model):
     @classmethod
     def get(cls, ident: Any) -> Self | None:
         return db.session.get(cls, ident)
+
+
+# imported from PANTHEON
+class PantheonSpecies(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    species: Mapped[str | None] = mapped_column(index=True)
+    family: Mapped[str | None] = mapped_column()
+    order: Mapped[str | None] = mapped_column()
+    sqs: Mapped[str | None] = mapped_column()
+    conservation_status: Mapped[str | None] = mapped_column()
+    larval_feeding_guild: Mapped[str | None] = mapped_column()
+    adult_feeding_guild: Mapped[str | None] = mapped_column()
+    broad_biotope: Mapped[str | None] = mapped_column()
+    habitat: Mapped[str | None] = mapped_column()
+    resources: Mapped[str | None] = mapped_column()
+    specific_assemblage_type: Mapped[str | None] = mapped_column(index=True)
+    habitat_score: Mapped[str | None] = mapped_column()
+    associations: Mapped[str | None] = mapped_column()
+    common_name: Mapped[str | None] = mapped_column()
+    notes: Mapped[str | None] = mapped_column()

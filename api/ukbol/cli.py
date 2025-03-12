@@ -5,6 +5,7 @@ from flask.cli import FlaskGroup
 
 from ukbol.app import create_app
 from ukbol.data.bold import rebuild_bold_tables
+from ukbol.data.pantheon import rebuild_pantheon_tables
 from ukbol.data.uksi import rebuild_uksi_tables
 
 
@@ -28,6 +29,14 @@ def rebuild_uksi():
 @click.argument("bold_snapshot", type=click.Path(exists=True, dir_okay=False))
 def rebuild_bold(bold_snapshot: Path):
     rebuild_bold_tables(bold_snapshot)
+
+
+@cli.command("rebuild-pantheon")
+@click.argument(
+    "pantheon_snapshot", type=click.Path(exists=True, dir_okay=False, path_type=Path)
+)
+def rebuild_pantheon(pantheon_snapshot: Path):
+    rebuild_pantheon_tables(pantheon_snapshot)
 
 
 if __name__ == "__main__":
