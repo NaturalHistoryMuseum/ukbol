@@ -34,12 +34,13 @@ jobs:
           echo PATH=$PATH >> $GITHUB_ENV
 
       - name: Lint code
-        run: ruff check api/ukbol api/tests
+        run: ruff check ukbol tests
 
       - name: Format code
-        run: ruff format --check api/ukbol api/tests
+        run: ruff format --check ukbol tests
 
       - name: Run database for tests
+        working-directory: .
         run: docker compose up db --wait
 
       - name: Run tests
@@ -55,5 +56,6 @@ jobs:
         uses: coverallsapp/github-action@v2
 
       - name: Shutdown database
+        working-directory: .
         if: always()
         run: docker compose down
