@@ -18,17 +18,42 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12.x'
-          architecture: 'x64'
+          python-version-file: ".python-version"
 
-      - name: Update pip
-        run: pip install -U pip setuptools wheel
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.6.1"
 
       - name: Install dependencies
-        run: pip install ".[test]"
+        run: uv sync
+
+      - name: Activate virtualenv
+        run: |
+          . .venv/bin/activate
+          echo PATH=$PATH >> $GITHUB_ENV
+
+      - name: Lint code
+        run: ruff check api/ukbol api/tests
+
+      - name: Format code
+        run: ruff format --check api/ukbol api/tests
+
+      - name: Run database for tests
+        run: docker compose up db --wait
 
       - name: Run tests
-        run: ./run-tests.sh
+        env:
+          PYTHONUNBUFFERED: 1
+          PYTHONDONTWRITEBYTECODE: 1
+          FLASK_APP: "ukbol/app:create_app"
+          FLASK_DEBUG: true
+          UKBOL_SQLALCHEMY_DATABASE_URI: "postgresql+psycopg://admin:password@10.0.15.20/test"
+        run: pytest --cov=ukbol tests
 
       - name: Run coveralls
         uses: coverallsapp/github-action@v2
+
+      - name: Shutdown database
+        if: always()
+        run: docker compose down
