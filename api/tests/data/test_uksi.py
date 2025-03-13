@@ -23,21 +23,14 @@ class TestRebuildUKSITables:
         with mock_nbn_records():
             rebuild_uksi_tables()
 
-            assert Taxon.query.count() == 16
+            assert Taxon.query.count() == 14
             assert Synonym.query.count() == 4
 
             biota = Taxon.get("NHMSYS0021048735")
-            assert biota.name == "biota"
-            assert biota.rank == "unranked"
-            assert biota.authorship is None
-            assert biota.parent_id is None
-            assert len(biota.children) == 1
+            assert biota is None
 
-            eukaryota = biota.children[0]
-            assert eukaryota.id == "NBNSYS0100003095"
-            assert eukaryota.name == "eukaryota"
-            assert eukaryota.authorship == "(Chatton, 1925) Whittaker & Margulis, 1978"
-            assert eukaryota.rank == "domain"
+            eukaryota = Taxon.get("NBNSYS0100003095")
+            assert eukaryota is None
 
             fungi = Taxon.get("NHMSYS0020535450")
             assert fungi.name == "fungi"

@@ -2,6 +2,7 @@ from itertools import cycle
 
 from flask.testing import FlaskClient
 
+from ukbol.data.uksi import ROOT_NAMES
 from ukbol.extensions import db
 from ukbol.model import Specimen, Taxon
 from ukbol.schema import SpecimenSchema, TaxonSchema
@@ -13,9 +14,13 @@ specimen_schema = SpecimenSchema()
 def test_roots(client: FlaskClient):
     response = client.get("/api/taxon/roots")
     assert response.is_json
-    assert response.json == taxon_schema.dump(
-        [Taxon.get("NHMSYS0021048735")], many=True
-    )
+
+    expected_roots = db.session.scalars(
+        db.select(Taxon).filter(Taxon.name.in_(ROOT_NAMES))
+    ).all()
+    expected_json = taxon_schema.dump(expected_roots, many=True)
+
+    assert response.json == expected_json
 
 
 class TestGetTaxon:
@@ -48,7 +53,7 @@ class TestTaxonParents:
         assert response.status_code == 404
 
     def test_no_parents(self, client: FlaskClient):
-        response = client.get("/api/taxon/NHMSYS0021048735/parents")
+        response = client.get("/api/taxon/NHMSYS0020535450/parents")
         assert response.is_json
         assert response.json == []
 
@@ -62,8 +67,6 @@ class TestTaxonParents:
             "NHMSYS0020535847",
             "NHMSYS0020535046",
             "NHMSYS0020535450",
-            "NBNSYS0100003095",
-            "NHMSYS0021048735",
         ]
 
 

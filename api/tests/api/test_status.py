@@ -6,5 +6,5 @@ def test_status(client: FlaskClient):
     assert response.is_json
     assert response.json == {
         "status": ":)",
-        "db": {"specimen": 999, "synonym": 4, "taxon": 16},
+        "db": {"specimen": 999, "synonym": 4, "taxon": 14, "pantheon": 11779},
     }
