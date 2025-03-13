@@ -53,11 +53,6 @@ def rebuild_uksi_tables():
     Clear out the taxon and synonym tables, and then repopulate them with data derived
     from the NBN API.
     """
-    log("Removing existing data...")
-    Synonym.query.delete()
-    Taxon.query.delete()
-    db.session.commit()
-
     # we're going to build a directed graph from the taxonomy data so that we can add
     # the rows into the database in the right order, thus ensuring all the foreign keys
     # get inserted ok and in the right order (i.e. the referenced row is entered before
@@ -125,6 +120,11 @@ def rebuild_uksi_tables():
     log("Graph creation complete")
     log(f"Details: {len(graph.nodes)} nodes, {len(graph.edges)} edges")
     log(f"Also found {len(synonyms)} synonyms")
+
+    log("Removing existing data...")
+    Synonym.query.delete()
+    Taxon.query.delete()
+    db.session.commit()
 
     batch_size = 1000
     log("Writing taxa to database...")
