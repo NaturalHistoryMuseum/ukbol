@@ -6,7 +6,6 @@ from functools import wraps
 from itertools import groupby
 
 from flask import Blueprint, Response, make_response, request
-from sqlalchemy import Select
 from sqlalchemy.orm import aliased
 
 from ukbol.extensions import db
@@ -27,26 +26,6 @@ taxon_schema = TaxonSchema()
 specimen_schema = SpecimenSchema()
 suggestion_schema = TaxonSuggestionSchema()
 taxon_bin_schema = TaxonBinSchema()
-
-
-def add_ignore_ranks_filter(select: Select) -> Select:
-    """
-    Adds a clause to the given select query to ignore taxon ranks. The ranks to ignore
-    are extracted from the request's query parameters. If no ranks are specified, no
-    additional clause is added and all ranks are allowed in the query.
-
-    The query parameter which is used to specify the ranks to ignore is called
-    "ignore_ranks" and should contain a comma separated list of ranks.
-
-    :param select: the select query to use
-    :return: the select query with the added clause if necessary
-    """
-    ignore_ranks = request.args.get("ignore_ranks", "", type=str)
-    if not ignore_ranks:
-        return select
-
-    to_ignore = [rank.strip() for rank in ignore_ranks.split(",")]
-    return select.filter(Taxon.rank.not_in(to_ignore))
 
 
 def validate_taxon_id(func):
@@ -114,7 +93,6 @@ def get_suggestions():
     if query:
         select = select.filter(Taxon.name.ilike(f"%{query}%"))
 
-    select = add_ignore_ranks_filter(select)
     result = db.session.scalars(select.order_by(Taxon.name).limit(size))
 
     return suggestion_schema.dump(result.all(), many=True)
@@ -148,7 +126,6 @@ def get_taxon_children(taxon: Taxon):
     :return: a list of child Taxon objects, serialised as a JSON
     """
     select = db.select(Taxon).filter_by(parent_id=taxon.id)
-    select = add_ignore_ranks_filter(select)
     result = db.session.scalars(select.order_by(Taxon.name))
     return taxon_schema.dump(result.all(), many=True)
 

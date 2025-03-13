@@ -1,9 +1,9 @@
+from collections import deque
 from itertools import batched
 from typing import Iterable
 
 import networkx as nx
 import requests
-from networkx.algorithms.traversal import bfs_successors
 
 from ukbol.data.utils import get
 from ukbol.extensions import db
@@ -11,6 +11,10 @@ from ukbol.model import Synonym, Taxon
 from ukbol.utils import log
 
 USER_AGENT = "UKBoL taxonomy updater"
+# the names we want to be the root taxa
+ROOT_NAMES = ["animalia", "chromista", "fungi", "plantae"]
+# some ranks we just want to ignore and not add to the database
+UNACCEPTABLE_RANKS = ["unranked", "unknown", "functional group"]
 
 
 def get_from_nbn() -> Iterable[dict]:
@@ -55,17 +59,41 @@ def iter_taxa(graph: nx.DiGraph, *root_ids) -> Iterable[Taxon]:
     breadth first fashion so that they can be inserted into the database successfully
     without creating any dependency issues.
 
+    Some taxa will be skipped based a few different rules to try and filter out some of
+    the mess in the UKSI taxonomy on NBN.
+
     :param graph: the taxonomy graph
     :param root_ids: the taxon IDs to use as the roots
     :return: yields Taxon objects
     """
-    for root_id in root_ids:
-        root_taxon = graph.nodes[root_id]["taxon"]
-        # remove the taxon parent IDs to make them roots
-        root_taxon.parent_id = None
-        yield root_taxon
-        for _, successors in bfs_successors(graph, root_id):
-            yield from (graph.nodes[taxon_id]["taxon"] for taxon_id in successors)
+    # create a queue with the root IDs to start with
+    id_queue = deque(root_ids)
+    while id_queue:
+        taxon_id = id_queue.popleft()
+        taxon = graph.nodes[taxon_id]["taxon"]
+        # grab the parent taxon
+        parent_id = next(graph.predecessors(taxon_id))
+        parent = graph.nodes[parent_id]["taxon"]
+
+        # ignore some ranks that we really don't want
+        if taxon.rank in UNACCEPTABLE_RANKS:
+            continue
+        # if this is a species, and it's not under a genus, ignore it
+        if taxon.rank == "species" and parent.rank != "genus":
+            continue
+
+        # if the taxon ID is a root ID, set the parent to None
+        if taxon_id in root_ids:
+            taxon.parent_id = None
+
+        yield taxon
+
+        # don't add the children of species level taxa
+        if taxon.rank == "species":
+            continue
+
+        # add the children to the queue
+        id_queue.extend(graph.successors(taxon_id))
 
 
 def rebuild_uksi_tables():
@@ -80,9 +108,8 @@ def rebuild_uksi_tables():
     graph = nx.DiGraph()
     # collect synonyms in here as we go
     synonyms = []
-    # we only want the taxonomy at and below the following taxa, so when we spot them
-    # while crawling NBN, we'll add them to the root_ids list below
-    root_names = {"animalia", "chromista", "fungi", "plantae"}
+    # we only want the taxonomy at and below specific taxa, so when we spot them while
+    # crawling NBN, we'll add them to the root_ids list below
     root_ids = []
 
     log("Creating taxonomy graph...")
@@ -119,7 +146,7 @@ def rebuild_uksi_tables():
                 parent_id=parent_id,
             )
             graph.add_node(taxon.id, taxon=taxon)
-            if name in root_names:
+            if name in ROOT_NAMES:
                 root_ids.append(taxon.id)
 
     # add edges linking children to parents
