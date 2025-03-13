@@ -3,6 +3,7 @@ from typing import Iterable
 
 import networkx as nx
 import requests
+from networkx.algorithms.traversal import bfs_successors
 
 from ukbol.data.utils import get
 from ukbol.extensions import db
@@ -48,6 +49,25 @@ def get_from_nbn() -> Iterable[dict]:
     log(f"Downloaded {count} records from NBN API...")
 
 
+def iter_taxa(graph: nx.DiGraph, *root_ids) -> Iterable[Taxon]:
+    """
+    Given a directed taxonomy graph, yield the roots and all the taxa below them in a
+    breadth first fashion so that they can be inserted into the database successfully
+    without creating any dependency issues.
+
+    :param graph: the taxonomy graph
+    :param root_ids: the taxon IDs to use as the roots
+    :return: yields Taxon objects
+    """
+    for root_id in root_ids:
+        root_taxon = graph.nodes[root_id]["taxon"]
+        # remove the taxon parent IDs to make them roots
+        root_taxon.parent_id = None
+        yield root_taxon
+        for _, successors in bfs_successors(graph, root_id):
+            yield from (graph.nodes[taxon_id]["taxon"] for taxon_id in successors)
+
+
 def rebuild_uksi_tables():
     """
     Clear out the taxon and synonym tables, and then repopulate them with data derived
@@ -60,6 +80,10 @@ def rebuild_uksi_tables():
     graph = nx.DiGraph()
     # collect synonyms in here as we go
     synonyms = []
+    # we only want the taxonomy at and below the following taxa, so when we spot them
+    # while crawling NBN, we'll add them to the root_ids list below
+    root_names = {"animalia", "chromista", "fungi", "plantae"}
+    root_ids = []
 
     log("Creating taxonomy graph...")
     for record in get_from_nbn():
@@ -95,9 +119,8 @@ def rebuild_uksi_tables():
                 parent_id=parent_id,
             )
             graph.add_node(taxon.id, taxon=taxon)
-
-    # remove synonyms we don't have the reference taxon for
-    synonyms = [syn for syn in synonyms if syn.taxon_id in graph]
+            if name in root_names:
+                root_ids.append(taxon.id)
 
     # add edges linking children to parents
     for taxon_id, data in graph.nodes(data=True):
@@ -128,13 +151,19 @@ def rebuild_uksi_tables():
 
     batch_size = 1000
     log("Writing taxa to database...")
-    for batch in batched(nx.topological_sort(graph), batch_size):
-        db.session.add_all((graph.nodes[node]["taxon"] for node in batch))
+    # keep track of the taxon IDs we've actually entered into the database for later
+    added_ids = set()
+    for batch in batched(iter_taxa(graph, *root_ids), batch_size):
+        added_ids.update(taxon.id for taxon in batch)
+        db.session.add_all(batch)
         db.session.commit()
 
     log("Writing synonyms to database...")
     for batch in batched(synonyms, batch_size):
-        db.session.add_all(batch)
+        # only add synonyms which have a taxon in the database to relate to
+        db.session.add_all(
+            synonym for synonym in batch if synonym.taxon_id in added_ids
+        )
         db.session.commit()
 
     log(f"Added {Taxon.query.count()} taxa and {Synonym.query.count()} synonyms")

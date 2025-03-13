@@ -73,18 +73,15 @@ def validate_taxon_id(func):
 @blueprint.get("/taxon/roots")
 def get_roots():
     """
-    Returns a list of the root Taxon objects in the taxonomy that we want to display in
-    the front end, currently this is just the Biota entry but could be more I guess in
-    the future?
+    Returns a list of the root Taxon objects in the taxonomy, these are ones that have
+    no parent. At present which taxa this encapsulates is controlled by the uksi data
+    loader which specifically trims the parents to just the 4 kingdoms we want:
+    Animalia, Chromista, Fungi, and Plantae.
 
     :return: a list of Taxon serialised objects
     """
     return taxon_schema.dump(
-        db.session.scalars(
-            db.select(Taxon)
-            # we only actually want the biota root so just get that
-            .filter(Taxon.name == "biota")
-        ).all(),
+        db.session.scalars(db.select(Taxon).filter(Taxon.parent_id.is_(None))).all(),
         many=True,
     )
 
