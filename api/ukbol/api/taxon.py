@@ -241,13 +241,13 @@ def download_specimens(taxon: Taxon) -> Response:
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
     :return: a CSV file response
     """
+    rows = specimen_schema.dump(iter_specimens_in_associated_bins(taxon), many=True)
     data = io.StringIO()
-    headers = [column.name for column in Specimen.__table__.columns]
-    writer = csv.DictWriter(data, headers)
+    # use the first row to define the headers, or if there are no rows just use an empty
+    # dict to create an empty csv
+    writer = csv.DictWriter(data, next(iter(rows), {}).keys())
     writer.writeheader()
-    writer.writerows(
-        specimen_schema.dump(iter_specimens_in_associated_bins(taxon), many=True)
-    )
+    writer.writerows(rows)
     output = make_response(data.getvalue())
     output.headers["Content-Disposition"] = "attachment; filename=specimens.csv"
     output.headers["Content-type"] = "text/csv"
