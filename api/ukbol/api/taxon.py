@@ -3,9 +3,10 @@ import io
 from collections import Counter
 from dataclasses import dataclass
 from functools import wraps
-from itertools import groupby
+from itertools import batched, groupby
+from typing import Iterable
 
-from flask import Blueprint, Response, make_response, request
+from flask import Blueprint, Response, request, stream_with_context
 from sqlalchemy.orm import aliased
 
 from ukbol.extensions import db
@@ -233,23 +234,31 @@ def get_taxon_bins(taxon: Taxon):
 @validate_taxon_id
 def download_specimens(taxon: Taxon) -> Response:
     """
-    Download the taxon bin data as a CSV. This is done synchronously because the number
-    of specimens is likely not to be that large but if this becomes a burden it should
-    be changed to something asynchronous (and we'd need to page the get_taxon_bins route
-    as well really).
+    Download the taxon bin data as a CSV file. This is done synchronously because the
+    number of specimens is likely not to be that large but if this becomes a burden it
+    should be changed to something asynchronous. The data is streamed in chunks to avoid
+    building up lots of rows in memory.
 
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
-    :return: a CSV file response
+    :return: a streamed CSV response
     """
-    rows = specimen_schema.dump(iter_specimens_in_associated_bins(taxon), many=True)
-    data = io.StringIO()
-    # use the first row to define the headers, or if there are no rows just use an empty
-    # dict to create an empty csv
-    writer = csv.DictWriter(data, next(iter(rows), {}).keys())
-    writer.writeheader()
-    writer.writerows(rows)
-    output = make_response(data.getvalue())
+
+    def iter_rows() -> Iterable[str]:
+        for batch in batched(iter_specimens_in_associated_bins(taxon), 1000):
+            rows = specimen_schema.dump(batch, many=True)
+            data = io.StringIO()
+            writer = csv.DictWriter(data, rows[0].keys())
+            writer.writeheader()
+            writer.writerows(rows)
+            yield data.getvalue()
+
+    # use the taxon name in the filename
     filename = f"{taxon.name.replace(' ', '_')}_specimens.csv"
-    output.headers["Content-Disposition"] = f"attachment; filename={filename}"
-    output.headers["Content-type"] = "text/csv"
-    return output
+    headers = {
+        "Content-type": "text/csv",
+        "Content-Disposition": f"attachment; filename={filename}",
+    }
+    # stream the rows so that we don't have to buffer the whole lot in memory first. The
+    # generator needs the request context for the database. iter() is used to wrap the
+    # generator because stream_with_context wants an Iterator type.
+    return Response(stream_with_context(iter(iter_rows())), headers=headers)
