@@ -4,14 +4,17 @@ from collections import Counter
 from dataclasses import dataclass
 from functools import wraps
 from itertools import batched, groupby
-from typing import Iterable
+from typing import Iterator
 
 from flask import Blueprint, Response, request, stream_with_context
 from sqlalchemy.orm import aliased
 
 from ukbol.extensions import db
-from ukbol.model import Specimen, Taxon
-from ukbol.query import iter_specimens_in_associated_bins
+from ukbol.model import Taxon
+from ukbol.query import (
+    get_associated_specimens_select,
+    iter_associated_specimens,
+)
 from ukbol.schema import (
     SpecimenSchema,
     TaxonBinSchema,
@@ -154,14 +157,12 @@ def get_taxon_parents(taxon: Taxon):
     return [row[0] for row in db.session.query(recursive_query).all()][1:]
 
 
-@blueprint.get("/taxon/<taxon_id>/specimens")
+@blueprint.get("/taxon/<taxon_id>/associated_specimens")
 @validate_taxon_id
-def get_taxon_specimens(taxon: Taxon):
+def get_taxon_associated_specimens(taxon: Taxon):
     """
-    Given a taxon_id as part of the path, matches BOLD specimens with the same taxon
-    name and returns the details about them in a paginated fashion. The BOLD specimens
-    are matched in the local database using a direct lowercase string match currently.
-    All synonyms of the taxon are also used during matching.
+    Given a taxon_id as part of the path, finds the BINs the taxon appears in and then
+    finds the specimens in those BINs and returns them.
 
     Paging can be achieved using the "page" and "per_page" parameters. The results are
     ordered by name and ID ascending.
@@ -169,17 +170,7 @@ def get_taxon_specimens(taxon: Taxon):
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
     :return: a list of Specimen objects, serialised as a JSON
     """
-    # todo: should we use the rank too?
-    # we find the specimens from the selected taxon using a simple exact name match with
-    # the accepted name plus the synonyms (if there are any)
-    names = {taxon.name}
-    names.update(synonym.name for synonym in taxon.synonyms)
-    select = (
-        db.select(Specimen)
-        .filter(Specimen.identification.in_(names))
-        .order_by(Specimen.identification, Specimen.id)
-    )
-
+    select = get_associated_specimens_select(taxon).order_by(Taxon.name, Taxon.id)
     page = db.paginate(select)
     return {
         "count": page.total,
@@ -211,7 +202,7 @@ def get_taxon_bins(taxon: Taxon):
     """
     bins = []
     for bin_uri, specimens in groupby(
-        iter_specimens_in_associated_bins(taxon), lambda s: s.bin_uri
+        iter_associated_specimens(taxon), lambda s: s.bin_uri
     ):
         count = 0
         uk_count = 0
@@ -243,8 +234,8 @@ def download_specimens(taxon: Taxon) -> Response:
     :return: a streamed CSV response
     """
 
-    def iter_rows() -> Iterable[str]:
-        for batch in batched(iter_specimens_in_associated_bins(taxon), 1000):
+    def iter_rows() -> Iterator[str]:
+        for batch in batched(iter_associated_specimens(taxon), 1000):
             rows = specimen_schema.dump(batch, many=True)
             data = io.StringIO()
             writer = csv.DictWriter(data, rows[0].keys())
@@ -259,6 +250,5 @@ def download_specimens(taxon: Taxon) -> Response:
         "Content-Disposition": f"attachment; filename={filename}",
     }
     # stream the rows so that we don't have to buffer the whole lot in memory first. The
-    # generator needs the request context for the database. iter() is used to wrap the
-    # generator because stream_with_context wants an Iterator type.
-    return Response(stream_with_context(iter(iter_rows())), headers=headers)
+    # generator needs the request context for the database
+    return Response(stream_with_context(iter_rows()), headers=headers)
