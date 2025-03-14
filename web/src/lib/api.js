@@ -24,7 +24,7 @@ export async function getSuggestions(search, size) {
 }
 
 export async function getTaxonBins(taxonId) {
-  return (await axios.get(`/api/taxon/${taxonId}/bins`)).data;
+  return (await axios.get(`/api/taxon/${taxonId}/bin_summaries`)).data;
 }
 
 export async function getGBIFData(name, rank) {

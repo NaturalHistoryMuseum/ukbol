@@ -9,12 +9,9 @@ from typing import Iterator
 from flask import Blueprint, Response, request, stream_with_context
 from sqlalchemy.orm import aliased
 
+from ukbol.bins import get_associated_specimens_select, iter_associated_specimens
 from ukbol.extensions import db
 from ukbol.model import Taxon
-from ukbol.query import (
-    get_associated_specimens_select,
-    iter_associated_specimens,
-)
 from ukbol.schema import (
     SpecimenSchema,
     TaxonBinSchema,
@@ -179,26 +176,26 @@ def get_taxon_associated_specimens(taxon: Taxon):
 
 
 @dataclass
-class TaxonBin:
+class BINSummary:
     bin: str
     count: int
     uk_count: int
     names: list[tuple[str, int]]
 
 
-@blueprint.get("/taxon/<taxon_id>/bins")
+@blueprint.get("/taxon/<taxon_id>/bin_summaries")
 @validate_taxon_id
 def get_taxon_bins(taxon: Taxon):
     """
     Given a taxon_id as part of the path, matches BOLD specimens with the same taxon
-    name, groups them by their assigned BIN and then returns a list of all bins in
-    descending count order with details about counts etc.
+    name, groups them by their assigned BIN and then returns a list of all BINs in
+    descending count order with summary details about counts etc.
 
     The BOLD specimens are matched in the local database using a direct lowercase string
     match currently. All synonyms of the taxon are also used during matching.
 
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
-    :return: a list of JSON objects representing a single BIN
+    :return: a list of JSON objects summarising a single BIN
     """
     bins = []
     for bin_uri, specimens in groupby(
@@ -213,7 +210,7 @@ def get_taxon_bins(taxon: Taxon):
                 uk_count += 1
             names[specimen.identification] += 1
 
-        bins.append(TaxonBin(bin_uri, count, uk_count, names.most_common()))
+        bins.append(BINSummary(bin_uri, count, uk_count, names.most_common()))
 
     # return sorted by specimen count
     return taxon_bin_schema.dump(
