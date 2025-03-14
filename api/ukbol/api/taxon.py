@@ -249,6 +249,7 @@ def download_specimens(taxon: Taxon) -> Response:
     writer.writeheader()
     writer.writerows(rows)
     output = make_response(data.getvalue())
-    output.headers["Content-Disposition"] = "attachment; filename=specimens.csv"
+    filename = f"{taxon.name.replace(' ', '_')}_specimens.csv"
+    output.headers["Content-Disposition"] = f"attachment; filename={filename}"
     output.headers["Content-type"] = "text/csv"
     return output
