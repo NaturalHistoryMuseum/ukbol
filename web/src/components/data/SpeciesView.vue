@@ -90,6 +90,7 @@
         </div>
       </div>
       <div class="px-4 pb-4 overflow-y-auto">
+        <p class="font-bold">BIN Summaries</p>
         <BINSummaryTable :bin-summaries="binSummaries"></BINSummaryTable>
       </div>
     </template>
