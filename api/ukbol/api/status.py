@@ -1,8 +1,12 @@
 from flask import Blueprint
 
-from ukbol.model import PantheonSpecies, Specimen, Synonym, Taxon
+from ukbol.extensions import db
+from ukbol.model import DataSourceStatus
+from ukbol.schema import DataSourceStatusSchema
 
 blueprint = Blueprint("status", __name__)
+
+source_status_schema = DataSourceStatusSchema()
 
 
 @blueprint.get("/status")
@@ -15,22 +19,9 @@ def status() -> dict:
 
     :return: a dict as JSON
     """
+    select = db.select(DataSourceStatus).order_by(DataSourceStatus.name)
+    result = db.session.scalars(select)
     return {
         "status": ":)",
-    }
-
-
-@blueprint.get("/status/counts")
-def counts() -> dict:
-    """
-    Returns a status response showing the counts of the various tables of data in the
-    database. This may take a bit of time to load.
-
-    :return: a dict as JSON
-    """
-    return {
-        "specimen": Specimen.query.count(),
-        "taxon": Taxon.query.count(),
-        "synonym": Synonym.query.count(),
-        "pantheon": PantheonSpecies.query.count(),
+        "sources": source_status_schema.dump(result.all(), many=True),
     }
