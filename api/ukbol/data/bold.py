@@ -1,10 +1,12 @@
 import csv
+import os
 import sys
 import tarfile
 from io import TextIOWrapper
 from itertools import batched
 from pathlib import Path
 
+from ukbol.data.utils import update_status
 from ukbol.extensions import db
 from ukbol.model import Specimen
 from ukbol.utils import log
@@ -114,4 +116,7 @@ def rebuild_bold_tables(bold_snapshot: Path):
         finally:
             raw_connection.close()
 
-    log(f"Added {Specimen.query.count()} specimens")
+    version = os.environ.get("UKBOL_BOLD_DATA_VERSION", None)
+    specimen_count = Specimen.query.count()
+    update_status("bold-specimens", specimen_count, version)
+    log(f"Added {specimen_count} specimens")

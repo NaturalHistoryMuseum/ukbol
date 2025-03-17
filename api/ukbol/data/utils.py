@@ -1,3 +1,9 @@
+from datetime import datetime, timezone
+
+from ukbol.extensions import db
+from ukbol.model import DataSourceStatus
+
+
 def get(
     row: dict[str, str],
     column: str,
@@ -19,3 +25,19 @@ def get(
     if value and (not filter_str_nones or value != "None"):
         return value.lower() if lowercase else value
     return None
+
+
+def update_status(name: str, total: int, version: str | None = None):
+    updated_at = datetime.now(timezone.utc)
+    status = DataSourceStatus.get(name)
+    if status is None:
+        db.session.add(
+            DataSourceStatus(
+                name=name, updated_at=updated_at, version=version, total=total
+            )
+        )
+    else:
+        status.updated_at = updated_at
+        status.version = version
+        status.total = total
+    db.session.commit()

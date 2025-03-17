@@ -5,7 +5,7 @@ from typing import Iterable
 import networkx as nx
 import requests
 
-from ukbol.data.utils import get
+from ukbol.data.utils import get, update_status
 from ukbol.extensions import db
 from ukbol.model import Synonym, Taxon
 from ukbol.utils import log
@@ -193,5 +193,9 @@ def rebuild_uksi_tables():
         )
         db.session.commit()
 
-    log(f"Added {Taxon.query.count()} taxa and {Synonym.query.count()} synonyms")
+    taxon_count = Taxon.query.count()
+    synonym_count = Synonym.query.count()
+    update_status("uksi-taxa", taxon_count)
+    update_status("uksi-synonym", synonym_count)
+    log(f"Added {taxon_count} taxa and {synonym_count} synonyms")
     log("UKSI derived tables rebuilt")

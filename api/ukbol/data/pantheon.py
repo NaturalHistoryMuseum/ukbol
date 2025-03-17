@@ -1,10 +1,12 @@
 import csv
+import os
 import sys
 from io import TextIOWrapper
 from itertools import batched
 from pathlib import Path
 from typing import Iterable
 
+from ukbol.data.utils import update_status
 from ukbol.extensions import db
 from ukbol.model import PantheonSpecies
 from ukbol.utils import log
@@ -56,4 +58,7 @@ def rebuild_pantheon_tables(pantheon_snapshot: Path):
             if count % 1000 == 0:
                 log(f"{count} so far...")
 
-    log(f"Added {PantheonSpecies.query.count()} pantheon species")
+    version = os.environ.get("UKBOL_PANTHEON_DATA_VERSION", None)
+    species_count = PantheonSpecies.query.count()
+    update_status("pantheon-species", species_count, version)
+    log(f"Added {species_count} pantheon species")
