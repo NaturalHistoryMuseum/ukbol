@@ -69,10 +69,36 @@
       by Natural England, the Natural History Museum and in-kind support by all
       steering group members.
     </section>
+
+    <section>
+      <h2>Data Sources</h2>
+      This website uses data from the following sources:
+
+      <ul class="list-disc pl-8">
+        <li class="py-2" v-for="source in sources">
+          <p>
+            Name: <span class="italic">{{ source.name }}</span>
+          </p>
+          <p>
+            Total records:
+            <span class="italic">{{ source.total.toLocaleString() }}</span>
+          </p>
+          <p>
+            Last updated: <span class="italic">{{ source.updated_at }}</span>
+          </p>
+          <p v-if="!!source.version">
+            Version: <span class="italic">{{ source.version }}</span>
+          </p>
+        </li>
+      </ul>
+    </section>
   </div>
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
+import { getDataSources } from '../../lib/api.js';
+
 const steeringGroup = [
   { name: 'Ben Price', inst: 'Natural History Museum (coordinator)' },
   { name: 'Katie Clark', inst: 'Natural England' },
@@ -94,6 +120,12 @@ const steeringGroup = [
   { name: 'Craig Macadam', inst: 'Rethink Nature Partnership' },
   { name: 'David Roy', inst: 'Biological Records Centre, UKCEH' },
 ];
+
+const sources = ref([]);
+
+onMounted(async () => {
+  sources.value = await getDataSources();
+});
 </script>
 
 <style scoped></style>

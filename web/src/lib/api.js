@@ -75,3 +75,7 @@ export async function getPhylopicData(gbifTaxon) {
 export function buildDownloadUrl(taxonId) {
   return `/api/taxon/${taxonId}/download/specimens`;
 }
+
+export async function getDataSources() {
+  return (await axios.get(`/api/status`)).data.sources;
+}
