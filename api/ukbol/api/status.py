@@ -17,10 +17,20 @@ def status() -> dict:
     """
     return {
         "status": ":)",
-        "db": {
-            "specimen": Specimen.query.count(),
-            "taxon": Taxon.query.count(),
-            "synonym": Synonym.query.count(),
-            "pantheon": PantheonSpecies.query.count(),
-        },
+    }
+
+
+@blueprint.get("/status/counts")
+def counts() -> dict:
+    """
+    Returns a status response showing the counts of the various tables of data in the
+    database. This may take a bit of time to load.
+
+    :return: a dict as JSON
+    """
+    return {
+        "specimen": Specimen.query.count(),
+        "taxon": Taxon.query.count(),
+        "synonym": Synonym.query.count(),
+        "pantheon": PantheonSpecies.query.count(),
     }
