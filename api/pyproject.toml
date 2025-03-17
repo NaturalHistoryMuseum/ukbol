@@ -1,6 +1,6 @@
 [project]
 name = "ukbol"
-version = "0.0.1"
+version = "1.0.0"
 description = "UK Barcode of Life website and data portal"
 requires-python = ">=3.12"
 license = { text = "GPL-3.0-or-later" }
