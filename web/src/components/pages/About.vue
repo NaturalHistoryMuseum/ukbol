@@ -84,7 +84,10 @@
             <span class="italic">{{ source.total.toLocaleString() }}</span>
           </p>
           <p>
-            Last updated: <span class="italic">{{ source.updated_at }}</span>
+            Last updated:
+            <span class="italic">{{
+              renderDateString(source.updated_at)
+            }}</span>
           </p>
           <p v-if="!!source.version">
             Version: <span class="italic">{{ source.version }}</span>
@@ -126,6 +129,10 @@ const sources = ref([]);
 onMounted(async () => {
   sources.value = await getDataSources();
 });
+
+function renderDateString(dateString) {
+  return new Date(dateString).toISOString();
+}
 </script>
 
 <style scoped></style>
