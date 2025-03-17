@@ -11,7 +11,7 @@ from sqlalchemy.orm import aliased
 
 from ukbol.bins import get_associated_specimens_select, iter_associated_specimens
 from ukbol.extensions import db
-from ukbol.model import Taxon
+from ukbol.model import Specimen, Taxon
 from ukbol.schema import (
     SpecimenSchema,
     TaxonBinSchema,
@@ -167,7 +167,9 @@ def get_taxon_associated_specimens(taxon: Taxon):
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
     :return: a list of Specimen objects, serialised as a JSON
     """
-    select = get_associated_specimens_select(taxon).order_by(Taxon.name, Taxon.id)
+    select = get_associated_specimens_select(taxon).order_by(
+        Specimen.identification, Specimen.id
+    )
     page = db.paginate(select)
     return {
         "count": page.total,

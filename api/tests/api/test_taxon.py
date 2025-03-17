@@ -85,12 +85,20 @@ def create_specimens(
 
     for i in range(matches):
         matching_specimens.append(
-            Specimen(specimenid=f"m-specimen-{i}", identification=taxon.name)
+            Specimen(
+                specimenid=f"m-specimen-{i}",
+                identification=taxon.name,
+                bin_uri="bin001",
+            )
         )
 
     for i, synonym in zip(range(synonym_matches), cycle(taxon.synonyms)):
         matching_specimens.append(
-            Specimen(specimenid=f"s-specimen-{i}", identification=synonym.name)
+            Specimen(
+                specimenid=f"s-specimen-{i}",
+                identification=synonym.name,
+                bin_uri="bin002",
+            )
         )
 
     for i in range(no_matches):
@@ -103,20 +111,20 @@ def create_specimens(
     db.session.commit()
 
     # sort by identification and id just like the API does
-    matching_specimens.sort(key=lambda syn: (syn.identification, syn.id))
+    matching_specimens.sort(key=lambda spec: (spec.identification, spec.id))
 
     return matching_specimens, not_matching_specimens
 
 
 class TestTaxonSpecimens:
     def test_404(self, client: FlaskClient):
-        response = client.get("/api/taxon/nope/specimens")
+        response = client.get("/api/taxon/nope/associated_specimens")
         assert response.status_code == 404
 
     def test_ok(self, client: FlaskClient):
         taxon = Taxon.get("BMSSYS0000000015")
         specimens, _ = create_specimens(taxon, 4, 3, 9)
-        response = client.get(f"/api/taxon/{taxon.id}/specimens")
+        response = client.get(f"/api/taxon/{taxon.id}/associated_specimens")
         assert response.is_json
         assert response.json == {
             "count": len(specimens),
@@ -126,7 +134,9 @@ class TestTaxonSpecimens:
     def test_paging(self, client: FlaskClient):
         taxon = Taxon.get("BMSSYS0000000015")
         specimens, _ = create_specimens(taxon, 4, 3, 9)
-        response = client.get(f"/api/taxon/{taxon.id}/specimens?page=3&per_page=2")
+        response = client.get(
+            f"/api/taxon/{taxon.id}/associated_specimens?page=3&per_page=2"
+        )
         assert response.is_json
         assert response.json == {
             "count": len(specimens),
