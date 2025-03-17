@@ -2,7 +2,7 @@
   <li class="relative scroll-m-20 whitespace-nowrap text-sm" ref="element">
     <div
       @click="onClick"
-      class="cursor-pointer select-none"
+      class="cursor-pointer select-none hover:underline"
       :class="{ 'font-bold': isSelected }"
     >
       <FontAwesomeIcon
