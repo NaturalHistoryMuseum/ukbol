@@ -2,16 +2,17 @@
   <li class="relative scroll-m-20 whitespace-nowrap text-sm" ref="element">
     <div
       @click="onClick"
-      class="cursor-pointer select-none"
+      class="cursor-pointer select-none hover:underline"
       :class="{ 'font-bold': isSelected }"
     >
-      <Name :name="taxon.name" :rank="taxon.rank"></Name>
       <FontAwesomeIcon
-        class="pl-1.5"
+        class="pr-2"
         v-if="!!icon"
         :icon="icon"
       ></FontAwesomeIcon>
-      <Spinner :loading="isLoading"></Spinner>
+      <span v-else class="pr-5"></span>
+      <Name :name="taxon.name" :rank="taxon.rank"></Name>
+      <Spinner class="ml-2" :loading="isLoading"></Spinner>
     </div>
 
     <template v-if="isExpanded">
@@ -30,7 +31,10 @@
 <script setup>
 import { computed, nextTick, ref } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { faSquareMinus, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
+import {
+  faSquareMinus,
+  faSquarePlus,
+} from '@fortawesome/free-regular-svg-icons';
 import Spinner from '../Spinner.vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';

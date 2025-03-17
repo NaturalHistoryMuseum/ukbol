@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="relative h-full w-full bg-white px-4 border-b-2"
+    class="relative h-full w-full bg-slate-100 px-4 border-b-2 border-b-slate-300"
     role="navigation"
     aria-label="main navigation"
   >

@@ -7,6 +7,7 @@ from flask.testing import FlaskClient
 from tests.data.test_uksi import mock_nbn_records
 from ukbol.app import create_app
 from ukbol.data.bold import rebuild_bold_tables
+from ukbol.data.pantheon import rebuild_pantheon_tables
 from ukbol.data.uksi import rebuild_uksi_tables
 from ukbol.extensions import db
 
@@ -34,8 +35,12 @@ def app(app_no_data) -> Flask:
         rebuild_uksi_tables()
 
     # load some bold data
-    bold_tar_gz = Path(__file__).parent / "files" / "BOLD_Public.19-Apr-2024.tar.gz"
+    bold_tar_gz = Path(__file__).parent / "files" / "BOLD_Public.24-JAN-2025.tar.gz"
     rebuild_bold_tables(bold_tar_gz)
+
+    # load some pantheon data
+    pantheon_csv = Path(__file__).parent / "files" / "pantheon.csv"
+    rebuild_pantheon_tables(pantheon_csv)
 
     yield app_no_data
 

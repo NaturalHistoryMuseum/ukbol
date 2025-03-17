@@ -24,7 +24,7 @@ export async function getSuggestions(search, size) {
 }
 
 export async function getTaxonBins(taxonId) {
-  return (await axios.get(`/api/taxon/${taxonId}/bins`)).data;
+  return (await axios.get(`/api/taxon/${taxonId}/bin_summaries`)).data;
 }
 
 export async function getGBIFData(name, rank) {
@@ -64,10 +64,18 @@ export async function getPhylopicData(gbifTaxon) {
   const fullImageUrl = `https://api.phylopic.org${relativeImageUrl}`;
   // get the image data
   const imageResponse = (await axios.get(fullImageUrl)).data;
-  const thumbnailUrl = imageResponse['_links']['thumbnailFiles'][0]['href'];
-  // return the thumbnail url and the full image url for credit linking
+  const svgUrl = imageResponse['_links']['vectorFile']['href'];
+  // return the SVG url and the full image url for credit linking
   return {
-    url: thumbnailUrl,
-    link: `https://phylopic.org/${relativeImageUrl}`,
+    url: svgUrl,
+    link: `https://phylopic.org${relativeImageUrl}`,
   };
+}
+
+export function buildDownloadUrl(taxonId) {
+  return `/api/taxon/${taxonId}/download/specimens`;
+}
+
+export async function getDataSources() {
+  return (await axios.get(`/api/status`)).data.sources;
 }

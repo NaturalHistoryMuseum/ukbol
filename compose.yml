@@ -5,6 +5,7 @@ services:
     build:
       context: ./docker/db
       dockerfile: Dockerfile
+    command: "-c max_wal_size=2GB"
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
@@ -15,6 +16,10 @@ services:
         ipv4_address: 10.0.15.20
     volumes:
       - db_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: pg_isready -U admin -d ukbol
+      interval: 1s
+      retries: 10
 
 networks:
   ukbol_net:

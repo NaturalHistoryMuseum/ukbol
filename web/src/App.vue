@@ -3,9 +3,7 @@
     <Nav />
     <main class="flex w-full justify-center">
       <RouterView v-slot="{ Component }">
-        <KeepAlive>
-          <component :is="Component" />
-        </KeepAlive>
+        <component :is="Component" />
       </RouterView>
     </main>
     <Footer />

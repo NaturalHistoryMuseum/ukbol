@@ -1,16 +1,14 @@
 <template>
   <div class="data-height flex w-full">
-    <Sidebar class="w-1/4" :taxon-id="taxonId"></Sidebar>
-    <div class="w-3/4">
-      <div v-if="!taxonId" class="p-4 h-full text-lg text-center">
-        Select a name in the tree to get started
+    <Sidebar class="w-1/4 xl:w-1/5" :taxon-id="taxonId"></Sidebar>
+    <div class="w-3/4 xl:w-4/5 px-2 bg-white">
+      <div
+        v-if="!taxonId"
+        class="p-4 h-full text-lg text-center content-center"
+      >
+        Search or select a name from the tree to the left to get started
       </div>
-      <Suspense v-else>
-        <SpeciesView :taxon-id="taxonId" :key="taxonId"></SpeciesView>
-        <template #fallback>
-          <Spinner :loading="true"></Spinner>
-        </template>
-      </Suspense>
+      <SpeciesView v-else :taxon-id="taxonId" :key="taxonId"></SpeciesView>
     </div>
   </div>
 </template>
@@ -20,7 +18,6 @@ import Sidebar from '../data/Sidebar.vue';
 import SpeciesView from '../data/SpeciesView.vue';
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import Spinner from '../Spinner.vue';
 
 const route = useRoute();
 

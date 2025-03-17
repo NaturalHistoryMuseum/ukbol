@@ -1,5 +1,8 @@
 <template>
-  <footer class="relative w-full bg-slate-200 px-4" aria-label="footer">
+  <footer
+    class="relative w-full bg-slate-100 px-4 text-sm border-t-slate-300"
+    aria-label="footer"
+  >
     <div class="flex flex-col h-full justify-center items-center gap-1">
       <div>
         An open source project by the Natural History Museum's Science Data

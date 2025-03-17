@@ -2,9 +2,10 @@ from itertools import cycle
 
 from flask.testing import FlaskClient
 
+from ukbol.data.uksi import ROOT_NAMES
 from ukbol.extensions import db
-from ukbol.model import Taxon, Specimen
-from ukbol.schema import TaxonSchema, SpecimenSchema
+from ukbol.model import Specimen, Taxon
+from ukbol.schema import SpecimenSchema, TaxonSchema
 
 taxon_schema = TaxonSchema()
 specimen_schema = SpecimenSchema()
@@ -13,9 +14,13 @@ specimen_schema = SpecimenSchema()
 def test_roots(client: FlaskClient):
     response = client.get("/api/taxon/roots")
     assert response.is_json
-    assert response.json == taxon_schema.dump(
-        [Taxon.get("NHMSYS0021048735")], many=True
-    )
+
+    expected_roots = db.session.scalars(
+        db.select(Taxon).filter(Taxon.name.in_(ROOT_NAMES))
+    ).all()
+    expected_json = taxon_schema.dump(expected_roots, many=True)
+
+    assert response.json == expected_json
 
 
 class TestGetTaxon:
@@ -48,7 +53,7 @@ class TestTaxonParents:
         assert response.status_code == 404
 
     def test_no_parents(self, client: FlaskClient):
-        response = client.get("/api/taxon/NHMSYS0021048735/parents")
+        response = client.get("/api/taxon/NHMSYS0020535450/parents")
         assert response.is_json
         assert response.json == []
 
@@ -62,8 +67,6 @@ class TestTaxonParents:
             "NHMSYS0020535847",
             "NHMSYS0020535046",
             "NHMSYS0020535450",
-            "NBNSYS0100003095",
-            "NHMSYS0021048735",
         ]
 
 
@@ -82,38 +85,46 @@ def create_specimens(
 
     for i in range(matches):
         matching_specimens.append(
-            Specimen(specimen_id=f"m-specimen-{i}", name=taxon.name)
+            Specimen(
+                specimenid=f"m-specimen-{i}",
+                identification=taxon.name,
+                bin_uri="bin001",
+            )
         )
 
     for i, synonym in zip(range(synonym_matches), cycle(taxon.synonyms)):
         matching_specimens.append(
-            Specimen(specimen_id=f"s-specimen-{i}", name=synonym.name)
+            Specimen(
+                specimenid=f"s-specimen-{i}",
+                identification=synonym.name,
+                bin_uri="bin002",
+            )
         )
 
     for i in range(no_matches):
         not_matching_specimens.append(
-            Specimen(specimen_id=f"n-specimen-{i}", name="beans")
+            Specimen(specimenid=f"n-specimen-{i}", identification="beans")
         )
 
     db.session.add_all(matching_specimens)
     db.session.add_all(not_matching_specimens)
     db.session.commit()
 
-    # sort by name and id just like the API does
-    matching_specimens.sort(key=lambda syn: (syn.name, syn.id))
+    # sort by identification and id just like the API does
+    matching_specimens.sort(key=lambda spec: (spec.identification, spec.id))
 
     return matching_specimens, not_matching_specimens
 
 
 class TestTaxonSpecimens:
     def test_404(self, client: FlaskClient):
-        response = client.get("/api/taxon/nope/specimens")
+        response = client.get("/api/taxon/nope/associated_specimens")
         assert response.status_code == 404
 
     def test_ok(self, client: FlaskClient):
         taxon = Taxon.get("BMSSYS0000000015")
         specimens, _ = create_specimens(taxon, 4, 3, 9)
-        response = client.get(f"/api/taxon/{taxon.id}/specimens")
+        response = client.get(f"/api/taxon/{taxon.id}/associated_specimens")
         assert response.is_json
         assert response.json == {
             "count": len(specimens),
@@ -123,7 +134,9 @@ class TestTaxonSpecimens:
     def test_paging(self, client: FlaskClient):
         taxon = Taxon.get("BMSSYS0000000015")
         specimens, _ = create_specimens(taxon, 4, 3, 9)
-        response = client.get(f"/api/taxon/{taxon.id}/specimens?page=3&per_page=2")
+        response = client.get(
+            f"/api/taxon/{taxon.id}/associated_specimens?page=3&per_page=2"
+        )
         assert response.is_json
         assert response.json == {
             "count": len(specimens),

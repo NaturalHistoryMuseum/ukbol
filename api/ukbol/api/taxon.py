@@ -1,13 +1,23 @@
+import csv
+import io
+from collections import Counter
+from dataclasses import dataclass
 from functools import wraps
-from itertools import groupby
+from itertools import batched, groupby
+from typing import Iterator
 
-from flask import Blueprint, request
-from sqlalchemy import Select
+from flask import Blueprint, Response, request, stream_with_context
 from sqlalchemy.orm import aliased
 
+from ukbol.bins import get_associated_specimens_select, iter_associated_specimens
 from ukbol.extensions import db
-from ukbol.model import Taxon, Specimen
-from ukbol.schema import TaxonSchema, SpecimenSchema, TaxonSuggestionSchema
+from ukbol.model import Specimen, Taxon
+from ukbol.schema import (
+    SpecimenSchema,
+    TaxonBinSchema,
+    TaxonSchema,
+    TaxonSuggestionSchema,
+)
 from ukbol.utils import clamp
 
 blueprint = Blueprint("taxon_api", __name__)
@@ -16,26 +26,7 @@ blueprint = Blueprint("taxon_api", __name__)
 taxon_schema = TaxonSchema()
 specimen_schema = SpecimenSchema()
 suggestion_schema = TaxonSuggestionSchema()
-
-
-def add_ignore_ranks_filter(select: Select) -> Select:
-    """
-    Adds a clause to the given select query to ignore taxon ranks. The ranks to ignore
-    are extracted from the request's query parameters. If no ranks are specified, no
-    additional clause is added and all ranks are allowed in the query.
-
-    The query parameter which is used to specify the ranks to ignore is called
-    "ignore_ranks" and should contain a comma separated list of ranks.
-
-    :param select: the select query to use
-    :return: the select query with the added clause if necessary
-    """
-    ignore_ranks = request.args.get("ignore_ranks", "", type=str)
-    if not ignore_ranks:
-        return select
-
-    to_ignore = [rank.strip() for rank in ignore_ranks.split(",")]
-    return select.filter(Taxon.rank.not_in(to_ignore))
+taxon_bin_schema = TaxonBinSchema()
 
 
 def validate_taxon_id(func):
@@ -62,17 +53,15 @@ def validate_taxon_id(func):
 @blueprint.get("/taxon/roots")
 def get_roots():
     """
-    Returns a list of the root Taxon objects in the taxonomy. There will probably only
-    be one of these, but returning a list future proofs us. The roots of the taxonomy
-    are Taxon objects without a parent and hence should represent the top-level taxa in
-    the taxonomy.
+    Returns a list of the root Taxon objects in the taxonomy, these are ones that have
+    no parent. At present which taxa this encapsulates is controlled by the uksi data
+    loader which specifically trims the parents to just the 4 kingdoms we want:
+    Animalia, Chromista, Fungi, and Plantae.
 
     :return: a list of Taxon serialised objects
     """
     return taxon_schema.dump(
-        db.session.scalars(
-            db.select(Taxon).filter(Taxon.parent_id.is_(None)).order_by(Taxon.name)
-        ).all(),
+        db.session.scalars(db.select(Taxon).filter(Taxon.parent_id.is_(None))).all(),
         many=True,
     )
 
@@ -105,7 +94,6 @@ def get_suggestions():
     if query:
         select = select.filter(Taxon.name.ilike(f"%{query}%"))
 
-    select = add_ignore_ranks_filter(select)
     result = db.session.scalars(select.order_by(Taxon.name).limit(size))
 
     return suggestion_schema.dump(result.all(), many=True)
@@ -139,7 +127,6 @@ def get_taxon_children(taxon: Taxon):
     :return: a list of child Taxon objects, serialised as a JSON
     """
     select = db.select(Taxon).filter_by(parent_id=taxon.id)
-    select = add_ignore_ranks_filter(select)
     result = db.session.scalars(select.order_by(Taxon.name))
     return taxon_schema.dump(result.all(), many=True)
 
@@ -167,14 +154,12 @@ def get_taxon_parents(taxon: Taxon):
     return [row[0] for row in db.session.query(recursive_query).all()][1:]
 
 
-@blueprint.get("/taxon/<taxon_id>/specimens")
+@blueprint.get("/taxon/<taxon_id>/associated_specimens")
 @validate_taxon_id
-def get_taxon_specimens(taxon: Taxon):
+def get_taxon_associated_specimens(taxon: Taxon):
     """
-    Given a taxon_id as part of the path, matches BOLD specimens with the same taxon
-    name and returns the details about them in a paginated fashion. The BOLD specimens
-    are matched in the local database using a direct lowercase string match currently.
-    All synonyms of the taxon are also used during matching.
+    Given a taxon_id as part of the path, finds the BINs the taxon appears in and then
+    finds the specimens in those BINs and returns them.
 
     Paging can be achieved using the "page" and "per_page" parameters. The results are
     ordered by name and ID ascending.
@@ -182,17 +167,9 @@ def get_taxon_specimens(taxon: Taxon):
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
     :return: a list of Specimen objects, serialised as a JSON
     """
-    # todo: should we use the rank too?
-    # we find the specimens from the selected taxon using a simple exact name match with
-    # the accepted name plus the synonyms (if there are any)
-    names = {taxon.name}
-    names.update(synonym.name for synonym in taxon.synonyms)
-    select = (
-        db.select(Specimen)
-        .filter(Specimen.name.in_(names))
-        .order_by(Specimen.name, Specimen.id)
+    select = get_associated_specimens_select(taxon).order_by(
+        Specimen.identification, Specimen.id
     )
-
     page = db.paginate(select)
     return {
         "count": page.total,
@@ -200,50 +177,77 @@ def get_taxon_specimens(taxon: Taxon):
     }
 
 
-@blueprint.get("/taxon/<taxon_id>/bins")
+@dataclass
+class BINSummary:
+    bin: str
+    count: int
+    uk_count: int
+    names: list[tuple[str, int]]
+
+
+@blueprint.get("/taxon/<taxon_id>/bin_summaries")
 @validate_taxon_id
 def get_taxon_bins(taxon: Taxon):
     """
     Given a taxon_id as part of the path, matches BOLD specimens with the same taxon
-    name, groups them by their assigned BIN and then returns a list of all bins in
-    descending count order with details about counts etc.
+    name, groups them by their assigned BIN and then returns a list of all BINs in
+    descending count order with summary details about counts etc.
 
     The BOLD specimens are matched in the local database using a direct lowercase string
     match currently. All synonyms of the taxon are also used during matching.
 
     :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
-    :return: a list of JSON objects representing a single BIN
+    :return: a list of JSON objects summarising a single BIN
     """
-    names = {taxon.name}
-    names.update(synonym.name for synonym in taxon.synonyms)
-    # order the results by the bin so that we can use groupby
-    select = (
-        db.select(Specimen)
-        .filter(Specimen.name.in_(names))
-        .filter(Specimen.bin_uri.isnot(None))
-        .order_by(Specimen.bin_uri)
-    )
-    result = db.session.scalars(select)
-
     bins = []
-    for bin_uri, specimens in groupby(result.all(), lambda s: s.bin_uri):
+    for bin_uri, specimens in groupby(
+        iter_associated_specimens(taxon), lambda s: s.bin_uri
+    ):
         count = 0
         uk_count = 0
-        names = set()
+        names = Counter()
         for specimen in specimens:
             count += 1
-            if specimen.country == "united kingdom":
+            if specimen.country_iso == "GB":
                 uk_count += 1
-            names.add(specimen.name)
+            names[specimen.identification] += 1
 
-        # flask doesn't like None keys so turn them into a string if they appear
-        bins.append(
-            {
-                "bin": bin_uri,
-                "count": count,
-                "ukCount": uk_count,
-                "names": sorted(names),
-            }
-        )
+        bins.append(BINSummary(bin_uri, count, uk_count, names.most_common()))
+
     # return sorted by specimen count
-    return sorted(bins, key=lambda bin_info: bin_info["count"], reverse=True)
+    return taxon_bin_schema.dump(
+        sorted(bins, key=lambda taxon_bin: taxon_bin.count, reverse=True), many=True
+    )
+
+
+@blueprint.get("/taxon/<taxon_id>/download/specimens")
+@validate_taxon_id
+def download_specimens(taxon: Taxon) -> Response:
+    """
+    Download the taxon bin data as a CSV file. This is done synchronously because the
+    number of specimens is likely not to be that large but if this becomes a burden it
+    should be changed to something asynchronous. The data is streamed in chunks to avoid
+    building up lots of rows in memory.
+
+    :param taxon: the Taxon object, retrieved via the validate_taxon_id decorator
+    :return: a streamed CSV response
+    """
+
+    def iter_rows() -> Iterator[str]:
+        for batch in batched(iter_associated_specimens(taxon), 1000):
+            rows = specimen_schema.dump(batch, many=True)
+            data = io.StringIO()
+            writer = csv.DictWriter(data, rows[0].keys())
+            writer.writeheader()
+            writer.writerows(rows)
+            yield data.getvalue()
+
+    # use the taxon name in the filename
+    filename = f"{taxon.name.replace(' ', '_')}_specimens.csv"
+    headers = {
+        "Content-type": "text/csv",
+        "Content-Disposition": f"attachment; filename={filename}",
+    }
+    # stream the rows so that we don't have to buffer the whole lot in memory first. The
+    # generator needs the request context for the database
+    return Response(stream_with_context(iter_rows()), headers=headers)
