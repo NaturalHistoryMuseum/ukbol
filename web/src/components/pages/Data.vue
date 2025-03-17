@@ -1,7 +1,7 @@
 <template>
   <div class="data-height flex w-full">
     <Sidebar class="w-1/4 xl:w-1/5" :taxon-id="taxonId"></Sidebar>
-    <div class="w-3/4 xl:w-4/5">
+    <div class="w-3/4 xl:w-4/5 px-2 bg-white">
       <div
         v-if="!taxonId"
         class="p-4 h-full text-lg text-center content-center"

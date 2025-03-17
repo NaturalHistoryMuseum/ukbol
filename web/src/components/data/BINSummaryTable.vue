@@ -4,7 +4,7 @@
       <tr>
         <th
           v-for="header in headers"
-          class="border-b font-medium pl-2 py-4 text-left bg-slate-300"
+          class="border-b font-bold pl-2 py-4 text-left bg-slate-300"
         >
           {{ header }}
         </th>
@@ -47,7 +47,7 @@
 import { capitalise } from '../../lib/utils.js';
 
 const headers = [
-  'BIN',
+  'BIN URI',
   'Number specimens (all)',
   'Number specimens (UK)',
   'Names in BIN',

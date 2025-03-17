@@ -1,7 +1,11 @@
 <template>
   <div class="text-xs">
-    <span class="p-1.5 text-white bg-slate-600">{{ label }}</span>
-    <span class="p-1.5 text-white" :class="[colour]">{{ value }}</span>
+    <span class="p-1.5 pl-2 rounded-l-md text-white bg-slate-500">{{
+      label
+    }}</span>
+    <span class="p-1.5 pr-2 rounded-r-md text-white" :class="[colour]">{{
+      value
+    }}</span>
   </div>
 </template>
 

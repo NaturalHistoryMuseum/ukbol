@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-slate-100 flex flex-col h-full">
-    <div v-if="status" class="place-self-center mt-20 text-center">
+  <div class="h-full">
+    <div v-if="status" class="place-self-center pt-20 text-center">
       <Spinner class="text-3xl" :loading="true"></Spinner>
       <p class="pt-4 text-sm italic">{{ status }}</p>
     </div>
-    <template v-else>
-      <div class="flex">
+    <div v-else class="flex flex-col h-full">
+      <div class="flex basis-1/12">
         <div class="grow p-4">
           <div class="text-2xl font-bold">
             <Name
@@ -77,10 +77,10 @@
           <div class="my-2">
             <a
               v-if="binSummaries.length > 0"
-              class="border-2 text-white p-2 border-black bg-slate-500 rounded-md hover:text-slate-100"
+              class="border-2 text-white p-2 border-slate-500 bg-slate-500 hover:bg-slate-450 rounded-md hover:text-slate-100"
               :href="downloadUrl"
             >
-              Download as CSV
+              Download data
               <FontAwesomeIcon
                 class="pl-2"
                 :icon="faDownload"
@@ -89,11 +89,10 @@
           </div>
         </div>
       </div>
-      <div class="px-4 pb-4 overflow-y-auto">
-        <p class="font-bold">BIN Summaries</p>
+      <div class="px-4 pb-4 basis-3/4 overflow-y-auto">
         <BINSummaryTable :bin-summaries="binSummaries"></BINSummaryTable>
       </div>
-    </template>
+    </div>
   </div>
 </template>
 

@@ -1,6 +1,11 @@
 <template>
   <div class="bg-slate-200 flex flex-col text-sm">
-    <input v-model="search" type="search" placeholder="Search..." class="p-1" />
+    <input
+      v-model="search"
+      type="search"
+      placeholder="Search..."
+      class="p-1 border-2 px-4 mx-2 border-b-1 border-gray-500 my-2 rounded-md"
+    />
     <div v-if="suggestions.length > 0">
       <ul>
         <li
@@ -23,6 +28,7 @@
     <ul v-show="suggestions.length === 0" class="overflow-y-auto p-1 relative">
       <Spinner :loading="roots.length === 0"></Spinner>
       <TreeNode
+        class="pl-2"
         v-for="taxon in roots"
         :key="taxon.id"
         :taxon="taxon"
