@@ -1,7 +1,7 @@
 from marshmallow import fields
 
 from ukbol.extensions import ma
-from ukbol.model import Specimen, Synonym, Taxon
+from ukbol.model import DataSourceStatus, Specimen, Synonym, Taxon
 
 
 class SynonymSchema(ma.SQLAlchemyAutoSchema):
@@ -128,3 +128,13 @@ class TaxonBinSchema(ma.Schema):
     count = fields.Integer()
     uk_count = fields.Integer()
     names = fields.List(fields.Tuple((fields.Str(), fields.Integer())))
+
+
+class DataSourceStatusSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = DataSourceStatus
+
+    name = ma.auto_field()
+    updated_at = ma.auto_field()
+    version = ma.auto_field()
+    total = ma.auto_field()

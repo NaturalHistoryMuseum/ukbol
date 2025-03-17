@@ -1,6 +1,7 @@
+from datetime import datetime
 from typing import Any, List, Self
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from ukbol.extensions import db
@@ -143,3 +144,15 @@ class PantheonSpecies(db.Model):
     associations: Mapped[str | None]
     common_name: Mapped[str | None]
     notes: Mapped[str | None]
+
+
+# information about when the data was imported from each source
+class DataSourceStatus(db.Model):
+    name: Mapped[str] = mapped_column(primary_key=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    version: Mapped[str | None]
+    total: Mapped[int]
+
+    @classmethod
+    def get(cls, name: str) -> Self | None:
+        return db.session.get(cls, name)
