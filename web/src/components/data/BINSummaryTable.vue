@@ -18,7 +18,7 @@
           class="text-left bg-slate-100 even:bg-slate-200"
         >
           <td class="py-2 pl-2">
-            <a target="_blank" :href="getBINDOI(binSummary)">
+            <a target="_blank" :href="getBINLink(binSummary)">
               {{ binSummary.bin }}
             </a>
           </td>
@@ -55,8 +55,8 @@ const headers = [
 
 const { binSummaries } = defineProps(['binSummaries']);
 
-function getBINDOI(binSummary) {
-  return `https://doi.org/10.5883/${binSummary.bin}`;
+function getBINLink(binSummary) {
+  return `https://portal.boldsystems.org/bin/${binSummary.bin}`;
 }
 </script>
 
