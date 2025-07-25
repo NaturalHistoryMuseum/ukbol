@@ -24,11 +24,15 @@
         </router-link>
       </div>
     </div>
-    <div class="absolute right-0 bottom-0 p-1 text-sm text-white">
+    <div class="absolute right-0 bottom-0 p-1 text-sm text-gray-300">
       Photo by
-      <a href="https://unsplash.com/@boardshortsben">Benjamin L. Jones</a> on
+      <a class="text-gray-300" href="https://unsplash.com/@ditakesphotos"
+        >Diana Parkhouse</a
+      >
+      on
       <a
-        href="https://unsplash.com/photos/blue-and-black-abstract-painting-gu5AAPt4pew"
+        class="text-gray-300"
+        href="https://unsplash.com/photos/green-plant-in-tilt-shift-lens-SFFGI4B0Gqo"
         >Unsplash</a
       >
     </div>

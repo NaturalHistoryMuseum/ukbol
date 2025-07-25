@@ -234,11 +234,15 @@ def download_specimens(taxon: Taxon) -> Response:
     """
 
     def iter_rows() -> Iterator[str]:
+        header_written = False
+
         for batch in batched(iter_associated_specimens(taxon), 1000):
             rows = specimen_schema.dump(batch, many=True)
             data = io.StringIO()
             writer = csv.DictWriter(data, rows[0].keys())
-            writer.writeheader()
+            if not header_written:
+                writer.writeheader()
+                header_written = True
             writer.writerows(rows)
             yield data.getvalue()
 
